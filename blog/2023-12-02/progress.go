@@ -1,7 +1,6 @@
-package http
+package slog
 
 import (
-   "154.pages.dev/encoding"
    "fmt"
    "io"
    "net/http"
@@ -36,18 +35,6 @@ func Progress_Parts(length int) *Progress {
    return &p
 }
 
-func (p Progress) percent() encoding.Percent {
-   return encoding.Percent(p.first) / encoding.Percent(p.length)
-}
-
-func (p Progress) rate() encoding.Rate {
-   return encoding.Rate(p.first) / encoding.Rate(time.Since(p.date).Seconds())
-}
-
-func (p Progress) size() encoding.Size {
-   return encoding.Size(p.first)
-}
-
 func (p *Progress) Reader(res *http.Response) io.Reader {
    if p.parts.length >= 1 {
       p.parts.last += 1
@@ -64,4 +51,16 @@ func (p *Progress) Write(b []byte) (int, error) {
       p.modified = time.Now()
    }
    return len(b), nil
+}
+
+func (p Progress) percent() Percent {
+   return Percent(p.first) / Percent(p.length)
+}
+
+func (p Progress) rate() Rate {
+   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
+}
+
+func (p Progress) size() Size {
+   return Size(p.first)
 }
