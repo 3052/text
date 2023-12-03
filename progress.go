@@ -1,8 +1,8 @@
 package slog
 
 import (
-   "fmt"
    "io"
+   "log/slog"
    "net/http"
    "time"
 )
@@ -35,6 +35,15 @@ func Progress_Parts(length int) *Progress {
    return &p
 }
 
+func (p *Progress) Write(b []byte) (int, error) {
+   p.first += len(b)
+   if time.Since(p.modified) >= time.Second {
+      slog.Info("*", "percent", p.percent(), "size", p.size(), "rate", p.rate())
+      p.modified = time.Now()
+   }
+   return len(b), nil
+}
+
 func (p *Progress) Reader(res *http.Response) io.Reader {
    if p.parts.length >= 1 {
       p.parts.last += 1
@@ -42,15 +51,6 @@ func (p *Progress) Reader(res *http.Response) io.Reader {
       p.length = p.last * p.parts.length / p.parts.last
    }
    return io.TeeReader(res.Body, p)
-}
-
-func (p *Progress) Write(b []byte) (int, error) {
-   p.first += len(b)
-   if time.Since(p.modified) >= time.Second {
-      fmt.Println(p.percent(), " ", p.size(), " ", p.rate())
-      p.modified = time.Now()
-   }
-   return len(b), nil
 }
 
 func (p Progress) percent() Percent {
