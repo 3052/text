@@ -7,10 +7,6 @@ import (
    "net/http"
 )
 
-func SetTransport(l slog.Level) {
-   http.DefaultClient.Transport = Transport{l}
-}
-
 type Handler struct {
    Level slog.Level
 }
@@ -44,4 +40,8 @@ type Transport struct {
 func (t Transport) RoundTrip(r *http.Request) (*http.Response, error) {
    slog.Log(context.Background(), t.Level, r.Method, "URL", r.URL)
    return http.DefaultTransport.RoundTrip(r)
+}
+
+func SetTransport(l slog.Level) {
+   http.DefaultClient.Transport = Transport{l}
 }
