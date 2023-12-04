@@ -1,4 +1,4 @@
-package slog
+package log
 
 import (
    "io"
@@ -6,7 +6,7 @@ import (
    "testing"
 )
 
-const address = "https://http-a-darwin.hulustream.com/183/196861183/stream_018b1aa0-d60b-618d-356f-0035e43c0fcf_1000128640662_H264_6000_1000128648587_video.mp4?authToken=1701729250_5dedf21efdbf94aa4fc7cf853d458791"
+const address = "https://http-a-darwin.hulustream.com/183/196861183/stream_018b1aa0-d60b-618d-356f-0035e43c0fcf_1000128640668_H264_2500_1000128655856_video.mp4?authToken=1701739147_8791ba024cff470def777352c3ce94f8"
 
 func Test_Progress(t *testing.T) {
    res, err := http.Get(address)
@@ -14,7 +14,7 @@ func Test_Progress(t *testing.T) {
       t.Fatal(err)
    }
    defer res.Body.Close()
-   r := Progress_Length(res.ContentLength).Reader(res)
-   SetHandler(0)
+   r := New_Progress(1).Reader(res)
+   Set_Handler(Handler{})
    io.Copy(io.Discard, r)
 }
