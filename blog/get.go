@@ -1,7 +1,7 @@
 package main
 
 import (
-   "154.pages.dev/http/blog"
+   "154.pages.dev/log"
    "log/slog"
    "net/http"
 )
@@ -9,8 +9,8 @@ import (
 func get() {
    slog.Info("hello world")
    http.Get("http://example.com")
-   blog.SetTransport(slog.LevelDebug)
-   defer blog.SetTransport(slog.LevelInfo)
+   log.SetTransport(slog.LevelDebug)
+   defer log.SetTransport(slog.LevelInfo)
    slog.Info("hello world")
    http.Get("http://example.com")
 }

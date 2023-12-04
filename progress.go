@@ -1,6 +1,7 @@
-package slog
+package log
 
 import (
+   "154.pages.dev/encoding"
    "io"
    "log/slog"
    "net/http"
@@ -53,14 +54,14 @@ func (p *Progress) Reader(res *http.Response) io.Reader {
    return io.TeeReader(res.Body, p)
 }
 
-func (p Progress) percent() Percent {
-   return Percent(p.first) / Percent(p.length)
+func (p Progress) percent() encoding.Percent {
+   return encoding.Percent(p.first) / encoding.Percent(p.length)
 }
 
-func (p Progress) rate() Rate {
-   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
+func (p Progress) rate() encoding.Rate {
+   return encoding.Rate(p.first) / encoding.Rate(time.Since(p.date).Seconds())
 }
 
-func (p Progress) size() Size {
-   return Size(p.first)
+func (p Progress) size() encoding.Size {
+   return encoding.Size(p.first)
 }
