@@ -7,13 +7,6 @@ import (
    "net/http"
 )
 
-func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
-   slog.Log(
-      context.Background(), t.level, "*", "method", req.Method, "URL", req.URL,
-   )
-   return http.DefaultTransport.RoundTrip(req)
-}
-
 func (Handler) Handle(_ context.Context, r slog.Record) error {
    fmt.Print(r.Message)
    r.Attrs(func(a slog.Attr) bool {
@@ -22,6 +15,13 @@ func (Handler) Handle(_ context.Context, r slog.Record) error {
    })
    fmt.Println()
    return nil
+}
+
+func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+   slog.Log(
+      context.Background(), t.level, "*", "method", req.Method, "URL", req.URL,
+   )
+   return http.DefaultTransport.RoundTrip(req)
 }
 
 func (Handler) WithAttrs([]slog.Attr) slog.Handler {
