@@ -9,7 +9,7 @@ import (
 
 func main() {
    var h log.Handler
-   flag.TextVar(&h.Level, "level", h.Level, "level")
+   flag.TextVar(&h.Level, "v", h.Level, "log level")
    flag.Parse()
    log.Set_Handler(h)
    log.Set_Transport(slog.LevelInfo)
