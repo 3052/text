@@ -7,7 +7,28 @@ import (
    "net/http"
 )
 
-func (Handler) Handle(_ context.Context, r slog.Record) error {
+func Set_Logger(level Level) {
+   h := handler{level: level}
+   h.Handler = slog.Default().Handler()
+   *slog.Default() = *slog.New(h)
+}
+
+func Set_Transport(level Level) {
+   http.DefaultClient.Transport = handler{level: level}
+}
+
+type Level = slog.Level
+
+type handler struct {
+   level Level
+   slog.Handler
+}
+
+func (h handler) Enabled(_ context.Context, level slog.Level) bool {
+   return level >= h.level
+}
+
+func (handler) Handle(_ context.Context, r slog.Record) error {
    fmt.Print(r.Message)
    r.Attrs(func(a slog.Attr) bool {
       fmt.Print(" ", a.Key, ":", a.Value)
@@ -17,37 +38,9 @@ func (Handler) Handle(_ context.Context, r slog.Record) error {
    return nil
 }
 
-func (Handler) WithAttrs([]slog.Attr) slog.Handler {
-   return nil
-}
-
-func (Handler) WithGroup(string) slog.Handler {
-   return nil
-}
-
-func (h Handler) Enabled(_ context.Context, lev slog.Level) bool {
-   return lev >= h.Level
-}
-
-type Handler struct {
-   Level slog.Level
-}
-
-func Set_Handler(h Handler) {
-   slog.SetDefault(slog.New(h))
-}
-
-type Transport struct {
-   Level slog.Level
-}
-
-func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (h handler) RoundTrip(req *http.Request) (*http.Response, error) {
    slog.Log(
-      context.Background(), t.Level, "*", "method", req.Method, "URL", req.URL,
+      context.Background(), h.level, "*", "method", req.Method, "URL", req.URL,
    )
    return http.DefaultTransport.RoundTrip(req)
-}
-
-func Set_Transport(lev slog.Level) {
-   http.DefaultClient.Transport = Transport{lev}
 }
