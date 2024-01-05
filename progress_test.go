@@ -9,7 +9,6 @@ import (
 const address = "https://http-a-darwin.hulustream.com/183/196861183/stream_018b1aa0-d60b-618d-356f-0035e43c0fcf_1000128640668_H264_2500_1000128655856_video.mp4?authToken=1701739147_8791ba024cff470def777352c3ce94f8"
 
 func Test_Progress(t *testing.T) {
-   Set_Handler(Handler{})
    Set_Transport(0)
    res, err := http.Get(address)
    if err != nil {
