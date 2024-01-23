@@ -9,20 +9,49 @@
     <link rel="icon" type="image/png" sizes="32x32" href="_/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="_/icons/favicon-16x16.png">
     <link rel="shortcut icon" href="_/icons/favicon.ico">
-    <title>154.pages.dev/log</title>
+    <title>log</title>
 </head>
   <body>
-    <main><h3 id="pkg-directories">Directories</h3>
-
-<table>
-  <tbody>
-    <tr>
-        <td><a href="v1.1.2">v1.1.2</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-</table>
-</main>
+<nav>
+  154.pages.dev/log<span class="navbar-right">
+  v1.1.3 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
+  </nav>
+<main><h2 id="pkg-overview">package log</h2>
+<pre class="chroma"><span class="kn">import</span> <span class="s">&#34;154.pages.dev/log&#34;</span></pre>
+<h3 id="pkg-index">Index</h3>
+<ul>
+  <li><a href="#Set_Logger">func Set_Logger(level Level)</a></li>
+  <li><a href="#Set_Transport">func Set_Transport(level Level)</a></li>
+  <li>
+      <a href="#Level">type Level</a>
+      </li>
+  <li>
+      <a href="#Progress">type Progress</a>
+      <ul>
+          <li><a href="#New_Progress">func New_Progress(parts int) *Progress</a></li>
+          <li><a href="#Progress.Reader">func (p *Progress) Reader(res *http.Response) io.Reader</a></li>
+          <li><a href="#Progress.Write">func (p *Progress) Write(data []byte) (int, error)</a></li>
+          </ul>
+      </li>
+  </ul><h3 id="pkg-functions">Functions</h3>
+  <h3 id="Set_Logger">func Set_Logger</h3>
+    <pre class="chroma"><span class="kd">func</span> <span class="nf">Set_Logger</span><span class="p">(</span><span class="nx">level</span> <a href="#Level"><span class="nx">Level</span></a><span class="p">)</span></pre>
+    <h3 id="Set_Transport">func Set_Transport</h3>
+    <pre class="chroma"><span class="kd">func</span> <span class="nf">Set_Transport</span><span class="p">(</span><span class="nx">level</span> <a href="#Level"><span class="nx">Level</span></a><span class="p">)</span></pre>
+    <h3 id="pkg-types">Types</h3>
+  <h3 id="Level">type Level</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Level</span> <span class="p">=</span> <a href="https://pkg.go.dev/log/slog"><span class="nx">slog</span></a><span class="p">.</span><a href="https://pkg.go.dev/log/slog#Level"><span class="nx">Level</span></a></pre>
+    <h3 id="Progress">type Progress</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Progress</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// contains filtered or unexported fields
+</span><span class="c1"></span><span class="p">}</span></pre>
+    <h4 id="New_Progress">func New_Progress</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="nf">New_Progress</span><span class="p">(</span><span class="nx">parts</span> <a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a><span class="p">)</span> <span class="o">*</span><a href="#Progress"><span class="nx">Progress</span></a></pre>
+  <h4 id="Progress.Reader">func (*Progress) Reader</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#Progress"><span class="nx">Progress</span></a><span class="p">)</span> <span class="nf">Reader</span><span class="p">(</span><span class="nx">res</span> <span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Response"><span class="nx">Response</span></a><span class="p">)</span> <a href="https://pkg.go.dev/io"><span class="nx">io</span></a><span class="p">.</span><a href="https://pkg.go.dev/io#Reader"><span class="nx">Reader</span></a></pre>
+  <h4 id="Progress.Write">func (*Progress) Write</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#Progress"><span class="nx">Progress</span></a><span class="p">)</span> <span class="nf">Write</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#byte"><span class="kt">byte</span></a><span class="p">)</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a><span class="p">)</span></pre>
+  </main>
     <hr>
     <footer>
       <small id="generated-by-footer">
