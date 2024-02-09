@@ -7,12 +7,6 @@ import (
    "net/http"
 )
 
-func Set_Logger(level Level) {
-   h := handler{level: level}
-   h.Handler = slog.Default().Handler()
-   *slog.Default() = *slog.New(h)
-}
-
 func Set_Transport(level Level) {
    http.DefaultClient.Transport = handler{level: level}
 }
