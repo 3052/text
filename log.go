@@ -10,38 +10,6 @@ import (
    "time"
 )
 
-func Handler(v Level) {
-   th := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-      Level: slog.Level(v),
-      ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-         switch a.Key {
-         case slog.LevelKey, slog.TimeKey:
-            return slog.Attr{}
-         }
-         return a
-      },
-   })
-   slog.SetDefault(slog.New(th))
-}
-
-func TransportDebug() {
-   http.DefaultClient.Transport = Level(slog.LevelDebug)
-}
-
-func TransportInfo() {
-   http.DefaultClient.Transport = Level(slog.LevelInfo)
-}
-
-type Level slog.Level
-
-func (v Level) RoundTrip(r *http.Request) (*http.Response, error) {
-   slog.Log(
-      context.Background(), slog.Level(v), "request",
-      "method", r.Method, "URL", r.URL,
-   )
-   return http.DefaultTransport.RoundTrip(r)
-}
-
 type ProgressMeter struct {
    first int
    last int64
@@ -88,4 +56,41 @@ func (p ProgressMeter) rate() encoding.Rate {
 
 func (p ProgressMeter) size() encoding.Size {
    return encoding.Size(p.first)
+}
+
+// Level
+//  - godocs.io/log/slog#Level.MarshalText
+//  - godocs.io/log/slog#Level.UnmarshalText
+type Level struct {
+   Level slog.Level
+}
+
+func TransportDebug() {
+   http.DefaultClient.Transport = Level{slog.LevelDebug}
+}
+
+func TransportInfo() {
+   http.DefaultClient.Transport = Level{slog.LevelInfo}
+}
+
+func (v Level) RoundTrip(r *http.Request) (*http.Response, error) {
+   slog.Log(
+      context.Background(), v.Level, "request",
+      "method", r.Method, "URL", r.URL,
+   )
+   return http.DefaultTransport.RoundTrip(r)
+}
+
+func Handler(v Level) {
+   th := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+      Level: v.Level,
+      ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+         switch a.Key {
+         case slog.LevelKey, slog.TimeKey:
+            return slog.Attr{}
+         }
+         return a
+      },
+   })
+   slog.SetDefault(slog.New(th))
 }
