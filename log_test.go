@@ -9,7 +9,7 @@ import (
 const address = "https://go.dev/dl/go1.21.5.windows-amd64.zip"
 
 func TestSlog(t *testing.T) {
-   Handler(0)
+   Handler(Level{})
    TransportInfo()
    var meter ProgressMeter
    meter.Set(1)
