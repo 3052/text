@@ -10,6 +10,20 @@ import (
    "time"
 )
 
+func Handler(v Level) {
+   th := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+      Level: v.Level,
+      ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+         switch a.Key {
+         case slog.LevelKey, slog.TimeKey:
+            return slog.Attr{}
+         }
+         return a
+      },
+   })
+   slog.SetDefault(slog.New(th))
+}
+
 type ProgressMeter struct {
    first int
    last int64
@@ -79,18 +93,4 @@ func (v Level) RoundTrip(r *http.Request) (*http.Response, error) {
       "method", r.Method, "URL", r.URL,
    )
    return http.DefaultTransport.RoundTrip(r)
-}
-
-func Handler(v Level) {
-   th := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-      Level: v.Level,
-      ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-         switch a.Key {
-         case slog.LevelKey, slog.TimeKey:
-            return slog.Attr{}
-         }
-         return a
-      },
-   })
-   slog.SetDefault(slog.New(th))
 }
