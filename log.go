@@ -49,17 +49,6 @@ func (p *ProgressMeter) Set(parts int) {
    p.parts.length = int64(parts)
 }
 
-func (p *ProgressMeter) Write(data []byte) (int, error) {
-   p.first += len(data)
-   if time.Since(p.modified) >= time.Second {
-      slog.Info(
-         "progress", "%", p.percent(), "size", p.size(), "rate", p.rate(),
-      )
-      p.modified = time.Now()
-   }
-   return len(data), nil
-}
-
 func (p ProgressMeter) percent() encoding.Percent {
    return encoding.Percent(p.first) / encoding.Percent(p.length)
 }
@@ -88,9 +77,15 @@ func TransportInfo() {
 }
 
 func (v Level) RoundTrip(r *http.Request) (*http.Response, error) {
-   slog.Log(
-      context.Background(), v.Level, "request",
-      "method", r.Method, "URL", r.URL,
-   )
+   slog.Log(context.Background(), v.Level, r.Method, "URL", r.URL)
    return http.DefaultTransport.RoundTrip(r)
+}
+
+func (p *ProgressMeter) Write(data []byte) (int, error) {
+   p.first += len(data)
+   if time.Since(p.modified) >= time.Second {
+      slog.Info(p.percent().String(), "size", p.size(), "rate", p.rate())
+      p.modified = time.Now()
+   }
+   return len(data), nil
 }
