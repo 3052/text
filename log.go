@@ -9,6 +9,10 @@ import (
    "time"
 )
 
+func SetTransport(r http.RoundTripper) {
+   http.DefaultClient.Transport = r
+}
+
 // Level
 //  - godocs.io/log/slog#Level.MarshalText
 //  - godocs.io/log/slog#Level.UnmarshalText
@@ -84,5 +88,5 @@ func (Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 func (t Transport) Set() {
-   http.DefaultClient.Transport = t
+   SetTransport(t)
 }

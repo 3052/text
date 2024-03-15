@@ -14,12 +14,13 @@
   <body>
     <nav>
         154.pages.dev/log<span class="navbar-right">
-          v1.1.9 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
+          v1.2.0 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
       </nav>
     <main><h2 id="pkg-overview">package log</h2>
 <pre class="chroma"><span class="kn">import</span> <span class="s">&#34;154.pages.dev/log&#34;</span></pre>
 <h3 id="pkg-index">Index</h3>
 <ul>
+  <li><a href="#SetTransport">func SetTransport(r http.RoundTripper)</a></li>
   <li>
       <a href="#Level">type Level</a>
       <ul>
@@ -41,7 +42,10 @@
           <li><a href="#Transport.Set">func (t Transport) Set()</a></li>
           </ul>
       </li>
-  </ul><h3 id="pkg-types">Types</h3>
+  </ul><h3 id="pkg-functions">Functions</h3>
+  <h3 id="SetTransport">func SetTransport</h3>
+    <pre class="chroma"><span class="kd">func</span> <span class="nf">SetTransport</span><span class="p">(</span><span class="nx">r</span> <a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#RoundTripper"><span class="nx">RoundTripper</span></a><span class="p">)</span></pre>
+    <h3 id="pkg-types">Types</h3>
   <h3 id="Level">type Level</h3>
     <pre class="chroma"><span class="kd">type</span> <span class="nx">Level</span> <span class="kd">struct</span> <span class="p">{</span>
 	<span id="Level.Level"><span class="nx">Level</span></span> <a href="https://pkg.go.dev/log/slog"><span class="nx">slog</span></a><span class="p">.</span><a href="https://pkg.go.dev/log/slog#Level"><span class="nx">Level</span></a>
