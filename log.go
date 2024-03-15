@@ -2,7 +2,6 @@ package log
 
 import (
    "154.pages.dev/encoding"
-   "context"
    "io"
    "log/slog"
    "net/http"
@@ -10,7 +9,14 @@ import (
    "time"
 )
 
-func Handler(v Level) {
+// Level
+//  - godocs.io/log/slog#Level.MarshalText
+//  - godocs.io/log/slog#Level.UnmarshalText
+type Level struct {
+   Level slog.Level
+}
+
+func (v Level) Set() {
    th := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
       Level: v.Level,
       ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
@@ -49,6 +55,15 @@ func (p *ProgressMeter) Set(parts int) {
    p.parts.length = int64(parts)
 }
 
+func (p *ProgressMeter) Write(data []byte) (int, error) {
+   p.first += len(data)
+   if time.Since(p.modified) >= time.Second {
+      slog.Info(p.percent().String(), "size", p.size(), "rate", p.rate())
+      p.modified = time.Now()
+   }
+   return len(data), nil
+}
+
 func (p ProgressMeter) percent() encoding.Percent {
    return encoding.Percent(p.first) / encoding.Percent(p.length)
 }
@@ -61,31 +76,13 @@ func (p ProgressMeter) size() encoding.Size {
    return encoding.Size(p.first)
 }
 
-// Level
-//  - godocs.io/log/slog#Level.MarshalText
-//  - godocs.io/log/slog#Level.UnmarshalText
-type Level struct {
-   Level slog.Level
-}
+type Transport struct{}
 
-func TransportDebug() {
-   http.DefaultClient.Transport = Level{slog.LevelDebug}
-}
-
-func TransportInfo() {
-   http.DefaultClient.Transport = Level{slog.LevelInfo}
-}
-
-func (v Level) RoundTrip(r *http.Request) (*http.Response, error) {
-   slog.Log(context.Background(), v.Level, r.Method, "URL", r.URL)
+func (Transport) RoundTrip(r *http.Request) (*http.Response, error) {
+   slog.Info(r.Method, "URL", r.URL)
    return http.DefaultTransport.RoundTrip(r)
 }
 
-func (p *ProgressMeter) Write(data []byte) (int, error) {
-   p.first += len(data)
-   if time.Since(p.modified) >= time.Second {
-      slog.Info(p.percent().String(), "size", p.size(), "rate", p.rate())
-      p.modified = time.Now()
-   }
-   return len(data), nil
+func (t Transport) Set() {
+   http.DefaultClient.Transport = t
 }

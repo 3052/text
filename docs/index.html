@@ -14,19 +14,16 @@
   <body>
     <nav>
         154.pages.dev/log<span class="navbar-right">
-          v1.1.8 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
+          v1.1.9 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
       </nav>
     <main><h2 id="pkg-overview">package log</h2>
 <pre class="chroma"><span class="kn">import</span> <span class="s">&#34;154.pages.dev/log&#34;</span></pre>
 <h3 id="pkg-index">Index</h3>
 <ul>
-  <li><a href="#Handler">func Handler(v Level)</a></li>
-  <li><a href="#TransportDebug">func TransportDebug()</a></li>
-  <li><a href="#TransportInfo">func TransportInfo()</a></li>
   <li>
       <a href="#Level">type Level</a>
       <ul>
-          <li><a href="#Level.RoundTrip">func (v Level) RoundTrip(r *http.Request) (*http.Response, error)</a></li>
+          <li><a href="#Level.Set">func (v Level) Set()</a></li>
           </ul>
       </li>
   <li>
@@ -37,14 +34,14 @@
           <li><a href="#ProgressMeter.Write">func (p *ProgressMeter) Write(data []byte) (int, error)</a></li>
           </ul>
       </li>
-  </ul><h3 id="pkg-functions">Functions</h3>
-  <h3 id="Handler">func Handler</h3>
-    <pre class="chroma"><span class="kd">func</span> <span class="nf">Handler</span><span class="p">(</span><span class="nx">v</span> <a href="#Level"><span class="nx">Level</span></a><span class="p">)</span></pre>
-    <h3 id="TransportDebug">func TransportDebug</h3>
-    <pre class="chroma"><span class="kd">func</span> <span class="nf">TransportDebug</span><span class="p">()</span></pre>
-    <h3 id="TransportInfo">func TransportInfo</h3>
-    <pre class="chroma"><span class="kd">func</span> <span class="nf">TransportInfo</span><span class="p">()</span></pre>
-    <h3 id="pkg-types">Types</h3>
+  <li>
+      <a href="#Transport">type Transport</a>
+      <ul>
+          <li><a href="#Transport.RoundTrip">func (Transport) RoundTrip(r *http.Request) (*http.Response, error)</a></li>
+          <li><a href="#Transport.Set">func (t Transport) Set()</a></li>
+          </ul>
+      </li>
+  </ul><h3 id="pkg-types">Types</h3>
   <h3 id="Level">type Level</h3>
     <pre class="chroma"><span class="kd">type</span> <span class="nx">Level</span> <span class="kd">struct</span> <span class="p">{</span>
 	<span id="Level.Level"><span class="nx">Level</span></span> <a href="https://pkg.go.dev/log/slog"><span class="nx">slog</span></a><span class="p">.</span><a href="https://pkg.go.dev/log/slog#Level"><span class="nx">Level</span></a>
@@ -54,8 +51,8 @@
 <li>godocs.io/log/slog#Level.MarshalText
 <li>godocs.io/log/slog#Level.UnmarshalText
 </ul>
-<h4 id="Level.RoundTrip">func (Level) RoundTrip</h4>
-  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <a href="#Level"><span class="nx">Level</span></a><span class="p">)</span> <span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Request"><span class="nx">Request</span></a><span class="p">)</span> <span class="p">(</span><span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Response"><span class="nx">Response</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a><span class="p">)</span></pre>
+<h4 id="Level.Set">func (Level) Set</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <a href="#Level"><span class="nx">Level</span></a><span class="p">)</span> <span class="nf">Set</span><span class="p">()</span></pre>
   <h3 id="ProgressMeter">type ProgressMeter</h3>
     <pre class="chroma"><span class="kd">type</span> <span class="nx">ProgressMeter</span> <span class="kd">struct</span> <span class="p">{</span>
 	<span class="c1">// contains filtered or unexported fields
@@ -66,6 +63,12 @@
   <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#ProgressMeter"><span class="nx">ProgressMeter</span></a><span class="p">)</span> <span class="nf">Set</span><span class="p">(</span><span class="nx">parts</span> <a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a><span class="p">)</span></pre>
   <h4 id="ProgressMeter.Write">func (*ProgressMeter) Write</h4>
   <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#ProgressMeter"><span class="nx">ProgressMeter</span></a><span class="p">)</span> <span class="nf">Write</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#byte"><span class="kt">byte</span></a><span class="p">)</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a><span class="p">)</span></pre>
+  <h3 id="Transport">type Transport</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Transport</span> <span class="kd">struct</span><span class="p">{}</span></pre>
+    <h4 id="Transport.RoundTrip">func (Transport) RoundTrip</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><a href="#Transport"><span class="nx">Transport</span></a><span class="p">)</span> <span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Request"><span class="nx">Request</span></a><span class="p">)</span> <span class="p">(</span><span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Response"><span class="nx">Response</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a><span class="p">)</span></pre>
+  <h4 id="Transport.Set">func (Transport) Set</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <a href="#Transport"><span class="nx">Transport</span></a><span class="p">)</span> <span class="nf">Set</span><span class="p">()</span></pre>
   </main>
     <hr>
     <footer>
