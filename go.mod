@@ -2,4 +2,4 @@ module 154.pages.dev/log
 
 go 1.22.0
 
-require 154.pages.dev/encoding v1.20.2
+require 154.pages.dev/encoding v1.20.7
