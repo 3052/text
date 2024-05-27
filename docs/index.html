@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="doc2go">
+    <link href="_/css/main.css" rel="stylesheet" />
+    <link rel="apple-touch-icon" sizes="180x180" href="_/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="_/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="_/icons/favicon-16x16.png">
+    <link rel="shortcut icon" href="_/icons/favicon.ico">
+    <title>text</title>
+</head>
+  <body>
+    <nav>
+        154.pages.dev/text<span class="navbar-right">
+          v1.2.1 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
+      </nav>
+    <main><h2 id="pkg-overview">package text</h2>
+<pre class="chroma"><span class="kn">import</span> <span class="s">&#34;154.pages.dev/text&#34;</span></pre>
+<h3 id="pkg-index">Index</h3>
+<ul>
+  <li><a href="#pkg-variables">Variables</a></li><li><a href="#Clean">func Clean(s string) string</a></li>
+  <li><a href="#CutBefore">func CutBefore(s, sep []byte) ([]byte, []byte, bool)</a></li>
+  <li><a href="#Name">func Name(n Namer) (string, error)</a></li>
+  <li><a href="#SetTransport">func SetTransport(r http.RoundTripper)</a></li>
+  <li>
+      <a href="#Cardinal">type Cardinal</a>
+      <ul>
+          <li><a href="#Cardinal.String">func (c Cardinal) String() string</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#Level">type Level</a>
+      <ul>
+          <li><a href="#Level.Set">func (v Level) Set()</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#Namer">type Namer</a>
+      </li>
+  <li>
+      <a href="#Percent">type Percent</a>
+      <ul>
+          <li><a href="#Percent.String">func (p Percent) String() string</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#ProgressMeter">type ProgressMeter</a>
+      <ul>
+          <li><a href="#ProgressMeter.Reader">func (p *ProgressMeter) Reader(res *http.Response) io.Reader</a></li>
+          <li><a href="#ProgressMeter.Set">func (p *ProgressMeter) Set(parts int)</a></li>
+          <li><a href="#ProgressMeter.Write">func (p *ProgressMeter) Write(data []byte) (int, error)</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#Rate">type Rate</a>
+      <ul>
+          <li><a href="#Rate.String">func (r Rate) String() string</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#Size">type Size</a>
+      <ul>
+          <li><a href="#Size.String">func (s Size) String() string</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#Transport">type Transport</a>
+      <ul>
+          <li><a href="#Transport.RoundTrip">func (Transport) RoundTrip(r *http.Request) (*http.Response, error)</a></li>
+          <li><a href="#Transport.Set">func (t Transport) Set()</a></li>
+          </ul>
+      </li>
+  </ul><h3 id="pkg-variables">Variables</h3>
+  <pre class="chroma"><span class="kd">var</span> <span id="Format"><span class="nx">Format</span></span> <span class="p">=</span> <span class="s">&#34;{{if .Show}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{else}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{.Title}} - {{.Year}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{end}}&#34;</span></pre>
+  <h3 id="pkg-functions">Functions</h3>
+  <h3 id="Clean">func Clean</h3>
+    <pre class="chroma"><span class="kd">func</span> <span class="nf">Clean</span><span class="p">(</span><span class="nx">s</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">)</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a></pre>
+    <h3 id="CutBefore">func CutBefore</h3>
+    <pre class="chroma"><span class="kd">func</span> <span class="nf">CutBefore</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span> <span class="nx">sep</span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#byte"><span class="kt">byte</span></a><span class="p">)</span> <span class="p">([]</span><a href="https://pkg.go.dev/builtin#byte"><span class="kt">byte</span></a><span class="p">,</span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#byte"><span class="kt">byte</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">)</span></pre>
+    <h3 id="Name">func Name</h3>
+    <pre class="chroma"><span class="kd">func</span> <span class="nf">Name</span><span class="p">(</span><span class="nx">n</span> <a href="#Namer"><span class="nx">Namer</span></a><span class="p">)</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a><span class="p">)</span></pre>
+    <h3 id="SetTransport">func SetTransport</h3>
+    <pre class="chroma"><span class="kd">func</span> <span class="nf">SetTransport</span><span class="p">(</span><span class="nx">r</span> <a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#RoundTripper"><span class="nx">RoundTripper</span></a><span class="p">)</span></pre>
+    <h3 id="pkg-types">Types</h3>
+  <h3 id="Cardinal">type Cardinal</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Cardinal</span> <a href="https://pkg.go.dev/builtin#float64"><span class="kt">float64</span></a></pre>
+    <h4 id="Cardinal.String">func (Cardinal) String</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <a href="#Cardinal"><span class="nx">Cardinal</span></a><span class="p">)</span> <span class="nf">String</span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a></pre>
+  <h3 id="Level">type Level</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Level</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span id="Level.Level"><span class="nx">Level</span></span> <a href="https://pkg.go.dev/log/slog"><span class="nx">slog</span></a><span class="p">.</span><a href="https://pkg.go.dev/log/slog#Level"><span class="nx">Level</span></a>
+<span class="p">}</span></pre>
+    <p>Level
+<ul>
+<li>godocs.io/log/slog#Level.MarshalText
+<li>godocs.io/log/slog#Level.UnmarshalText
+</ul>
+<h4 id="Level.Set">func (Level) Set</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <a href="#Level"><span class="nx">Level</span></a><span class="p">)</span> <span class="nf">Set</span><span class="p">()</span></pre>
+  <h3 id="Namer">type Namer</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Namer</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span id="Namer.Show"><span class="nf">Show</span></span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a>
+	<span id="Namer.Season"><span class="nf">Season</span></span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a>
+	<span id="Namer.Episode"><span class="nf">Episode</span></span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a>
+	<span id="Namer.Title"><span class="nf">Title</span></span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a>
+	<span id="Namer.Year"><span class="nf">Year</span></span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a>
+<span class="p">}</span></pre>
+    <h3 id="Percent">type Percent</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Percent</span> <a href="https://pkg.go.dev/builtin#float64"><span class="kt">float64</span></a></pre>
+    <h4 id="Percent.String">func (Percent) String</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <a href="#Percent"><span class="nx">Percent</span></a><span class="p">)</span> <span class="nf">String</span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a></pre>
+  <h3 id="ProgressMeter">type ProgressMeter</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">ProgressMeter</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// contains filtered or unexported fields
+</span><span class="c1"></span><span class="p">}</span></pre>
+    <h4 id="ProgressMeter.Reader">func (*ProgressMeter) Reader</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#ProgressMeter"><span class="nx">ProgressMeter</span></a><span class="p">)</span> <span class="nf">Reader</span><span class="p">(</span><span class="nx">res</span> <span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Response"><span class="nx">Response</span></a><span class="p">)</span> <a href="https://pkg.go.dev/io"><span class="nx">io</span></a><span class="p">.</span><a href="https://pkg.go.dev/io#Reader"><span class="nx">Reader</span></a></pre>
+  <h4 id="ProgressMeter.Set">func (*ProgressMeter) Set</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#ProgressMeter"><span class="nx">ProgressMeter</span></a><span class="p">)</span> <span class="nf">Set</span><span class="p">(</span><span class="nx">parts</span> <a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a><span class="p">)</span></pre>
+  <h4 id="ProgressMeter.Write">func (*ProgressMeter) Write</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#ProgressMeter"><span class="nx">ProgressMeter</span></a><span class="p">)</span> <span class="nf">Write</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#byte"><span class="kt">byte</span></a><span class="p">)</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a><span class="p">)</span></pre>
+  <h3 id="Rate">type Rate</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Rate</span> <a href="https://pkg.go.dev/builtin#float64"><span class="kt">float64</span></a></pre>
+    <h4 id="Rate.String">func (Rate) String</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <a href="#Rate"><span class="nx">Rate</span></a><span class="p">)</span> <span class="nf">String</span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a></pre>
+  <h3 id="Size">type Size</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Size</span> <a href="https://pkg.go.dev/builtin#float64"><span class="kt">float64</span></a></pre>
+    <h4 id="Size.String">func (Size) String</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <a href="#Size"><span class="nx">Size</span></a><span class="p">)</span> <span class="nf">String</span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a></pre>
+  <h3 id="Transport">type Transport</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Transport</span> <span class="kd">struct</span><span class="p">{}</span></pre>
+    <h4 id="Transport.RoundTrip">func (Transport) RoundTrip</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><a href="#Transport"><span class="nx">Transport</span></a><span class="p">)</span> <span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Request"><span class="nx">Request</span></a><span class="p">)</span> <span class="p">(</span><span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Response"><span class="nx">Response</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a><span class="p">)</span></pre>
+  <h4 id="Transport.Set">func (Transport) Set</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <a href="#Transport"><span class="nx">Transport</span></a><span class="p">)</span> <span class="nf">Set</span><span class="p">()</span></pre>
+  </main>
+    <hr>
+    <footer>
+      <small id="generated-by-footer">
+        Generated with <a href="https://abhinav.github.io/doc2go/">doc2go</a>
+      </small>
+    </footer>
+    <script src="_/js/permalink.js"></script>
+  </body>
+</html>
