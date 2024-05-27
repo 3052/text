@@ -1,5 +1,4 @@
-module 154.pages.dev/log
+module 154.pages.dev/text
 
 go 1.22.0
 
-require 154.pages.dev/encoding v1.22.5

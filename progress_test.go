@@ -1,4 +1,4 @@
-package log
+package text
 
 import (
    "io"
