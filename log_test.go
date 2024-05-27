@@ -20,12 +20,9 @@ func TestOne(t *testing.T) {
 }
 
 func TestTwo(t *testing.T) {
-   var (
-      meter ProgressMeter
-      trip Transport
-   )
+   var meter ProgressMeter
    meter.Set(1)
-   trip.Set()
+   LogLevel{}.SetTransport(true)
    res, err := http.Get(address)
    if err != nil {
       t.Fatal(err)
@@ -35,14 +32,11 @@ func TestTwo(t *testing.T) {
 }
 
 func TestThree(t *testing.T) {
-   var (
-      log Level
-      meter ProgressMeter
-      trip Transport
-   )
-   log.Set()
+   var meter ProgressMeter
    meter.Set(1)
-   trip.Set()
+   var level LogLevel
+   level.Set()
+   level.SetTransport(true)
    res, err := http.Get(address)
    if err != nil {
       t.Fatal(err)

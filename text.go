@@ -2,49 +2,104 @@ package text
 
 import (
    "bytes"
+   "io"
    "log/slog"
    "net/http"
-   "os"
    "strconv"
    "strings"
    "text/template"
+   "time"
 )
 
-func SetTransport(r http.RoundTripper) {
-   http.DefaultClient.Transport = r
+type ProgressMeter struct {
+   first int
+   last int64
+   length int64
+   parts struct {
+      last int64
+      length int64
+   }
+   modified time.Time
+   date time.Time
 }
 
-// Level
-//  - godocs.io/log/slog#Level.MarshalText
-//  - godocs.io/log/slog#Level.UnmarshalText
-type Level struct {
-   Level slog.Level
+func (p *ProgressMeter) Reader(res *http.Response) io.Reader {
+   p.parts.last += 1
+   p.last += res.ContentLength
+   p.length = p.last * p.parts.length / p.parts.last
+   return io.TeeReader(res.Body, p)
 }
 
-func (v Level) Set() {
-   text := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-      Level: v.Level,
-      ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-         switch a.Key {
-         case slog.LevelKey, slog.TimeKey:
-            return slog.Attr{}
-         }
-         return a
-      },
-   })
-   slog.SetDefault(slog.New(text))
+func (p *ProgressMeter) Set(parts int) {
+   p.date = time.Now()
+   p.modified = time.Now()
+   p.parts.length = int64(parts)
 }
 
-type Transport struct{}
-
-func (Transport) RoundTrip(r *http.Request) (*http.Response, error) {
-   slog.Info(r.Method, "URL", r.URL)
-   return http.DefaultTransport.RoundTrip(r)
+func (p *ProgressMeter) Write(data []byte) (int, error) {
+   p.first += len(data)
+   if time.Since(p.modified) >= time.Second {
+      slog.Info(p.percent().String(), "size", p.size(), "rate", p.rate())
+      p.modified = time.Now()
+   }
+   return len(data), nil
 }
 
-func (t Transport) Set() {
-   SetTransport(t)
+func (p ProgressMeter) percent() Percent {
+   return Percent(p.first) / Percent(p.length)
 }
+
+func (p ProgressMeter) rate() Rate {
+   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
+}
+
+func (p ProgressMeter) size() Size {
+   return Size(p.first)
+}
+
+func Name(n Namer) (string, error) {
+   text, err := new(template.Template).Parse(NameFormat)
+   if err != nil {
+      return "", err
+   }
+   var b strings.Builder
+   err = text.Execute(&b, n)
+   if err != nil {
+      return "", err
+   }
+   return b.String(), nil
+}
+
+type Namer interface {
+   Show() string
+   Season() int
+   Episode() int
+   Title() string
+   Year() int
+}
+
+func Clean(s string) string {
+   mapping := func(r rune) rune {
+      if strings.ContainsRune(`"*/:<>?\|`, r) {
+         return '-'
+      }
+      return r
+   }
+   return strings.Map(mapping, s)
+}
+
+func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
+   if i := bytes.Index(s, sep); i >= 0 {
+      return s[:i], s[i:], true
+   }
+   return s, nil, false
+}
+
+type unit_measure struct {
+   factor float64
+   name string
+}
+
 func label(value float64, unit unit_measure) string {
    var prec int
    if unit.factor != 1 {
@@ -110,51 +165,9 @@ func (s Size) String() string {
    return scale(float64(s), units)
 }
 
-type unit_measure struct {
-   factor float64
-   name string
-}
-var Format = 
+var NameFormat = 
    "{{if .Show}}" +
       "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
    "{{else}}" +
       "{{.Title}} - {{.Year}}" +
    "{{end}}"
-
-func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
-   if i := bytes.Index(s, sep); i >= 0 {
-      return s[:i], s[i:], true
-   }
-   return s, nil, false
-}
-
-func Clean(s string) string {
-   mapping := func(r rune) rune {
-      if strings.ContainsRune(`"*/:<>?\|`, r) {
-         return '-'
-      }
-      return r
-   }
-   return strings.Map(mapping, s)
-}
-
-func Name(n Namer) (string, error) {
-   text, err := new(template.Template).Parse(Format)
-   if err != nil {
-      return "", err
-   }
-   var b strings.Builder
-   err = text.Execute(&b, n)
-   if err != nil {
-      return "", err
-   }
-   return b.String(), nil
-}
-
-type Namer interface {
-   Show() string
-   Season() int
-   Episode() int
-   Title() string
-   Year() int
-}
