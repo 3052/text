@@ -21,7 +21,7 @@ type Level struct {
 }
 
 func (v Level) Set() {
-   th := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+   text := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
       Level: v.Level,
       ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
          switch a.Key {
@@ -31,7 +31,7 @@ func (v Level) Set() {
          return a
       },
    })
-   slog.SetDefault(slog.New(th))
+   slog.SetDefault(slog.New(text))
 }
 
 type ProgressMeter struct {
