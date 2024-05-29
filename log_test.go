@@ -34,9 +34,9 @@ func TestTwo(t *testing.T) {
 func TestThree(t *testing.T) {
    var meter ProgressMeter
    meter.Set(1)
-   var level LogLevel
-   level.Set()
-   level.SetTransport(true)
+   var log LogLevel
+   log.Set()
+   log.SetTransport(true)
    res, err := http.Get(address)
    if err != nil {
       t.Fatal(err)
