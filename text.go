@@ -11,6 +11,90 @@ import (
    "time"
 )
 
+var NameFormat = 
+   "{{if .Show}}" +
+      "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
+   "{{else}}" +
+      "{{.Title}} - {{.Year}}" +
+   "{{end}}"
+
+func Clean(s string) string {
+   mapping := func(r rune) rune {
+      if strings.ContainsRune(`"*/:<>?\|`, r) {
+         return '-'
+      }
+      return r
+   }
+   return strings.Map(mapping, s)
+}
+
+func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
+   if i := bytes.Index(s, sep); i >= 0 {
+      return s[:i], s[i:], true
+   }
+   return s, nil, false
+}
+
+func Name(n Namer) (string, error) {
+   text, err := new(template.Template).Parse(NameFormat)
+   if err != nil {
+      return "", err
+   }
+   var b strings.Builder
+   err = text.Execute(&b, n)
+   if err != nil {
+      return "", err
+   }
+   return b.String(), nil
+}
+
+func label(value float64, unit unit_measure) string {
+   var prec int
+   if unit.factor != 1 {
+      prec = 2
+      value *= unit.factor
+   }
+   return strconv.FormatFloat(value, 'f', prec, 64) + unit.name
+}
+
+func scale(value float64, units []unit_measure) string {
+   var unit unit_measure
+   for _, unit = range units {
+      if unit.factor * value < 1000 {
+         break
+      }
+   }
+   return label(value, unit)
+}
+
+type Cardinal float64
+
+func (c Cardinal) String() string {
+   units := []unit_measure{
+      {1, ""},
+      {1e-3, " thousand"},
+      {1e-6, " million"},
+      {1e-9, " billion"},
+      {1e-12, " trillion"},
+   }
+   return scale(float64(c), units)
+}
+
+type Namer interface {
+   Show() string
+   Season() int
+   Episode() int
+   Title() string
+   Year() int
+}
+
+type Percent float64
+
+func (p Percent) String() string {
+   unit := unit_measure{100, " %"}
+   return label(float64(p), unit)
+}
+
 type ProgressMeter struct {
    first int
    last int64
@@ -57,88 +141,6 @@ func (p ProgressMeter) size() Size {
    return Size(p.first)
 }
 
-func Name(n Namer) (string, error) {
-   text, err := new(template.Template).Parse(NameFormat)
-   if err != nil {
-      return "", err
-   }
-   var b strings.Builder
-   err = text.Execute(&b, n)
-   if err != nil {
-      return "", err
-   }
-   return b.String(), nil
-}
-
-type Namer interface {
-   Show() string
-   Season() int
-   Episode() int
-   Title() string
-   Year() int
-}
-
-func Clean(s string) string {
-   mapping := func(r rune) rune {
-      if strings.ContainsRune(`"*/:<>?\|`, r) {
-         return '-'
-      }
-      return r
-   }
-   return strings.Map(mapping, s)
-}
-
-func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
-   if i := bytes.Index(s, sep); i >= 0 {
-      return s[:i], s[i:], true
-   }
-   return s, nil, false
-}
-
-type unit_measure struct {
-   factor float64
-   name string
-}
-
-func label(value float64, unit unit_measure) string {
-   var prec int
-   if unit.factor != 1 {
-      prec = 2
-      value *= unit.factor
-   }
-   return strconv.FormatFloat(value, 'f', prec, 64) + unit.name
-}
-
-func scale(value float64, units []unit_measure) string {
-   var unit unit_measure
-   for _, unit = range units {
-      if unit.factor * value < 1000 {
-         break
-      }
-   }
-   return label(value, unit)
-}
-
-type Cardinal float64
-
-func (c Cardinal) String() string {
-   units := []unit_measure{
-      {1, ""},
-      {1e-3, " thousand"},
-      {1e-6, " million"},
-      {1e-9, " billion"},
-      {1e-12, " trillion"},
-   }
-   return scale(float64(c), units)
-}
-
-type Percent float64
-
-func (p Percent) String() string {
-   unit := unit_measure{100, " %"}
-   return label(float64(p), unit)
-}
-
 type Rate float64
 
 func (r Rate) String() string {
@@ -165,9 +167,7 @@ func (s Size) String() string {
    return scale(float64(s), units)
 }
 
-var NameFormat = 
-   "{{if .Show}}" +
-      "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
-   "{{else}}" +
-      "{{.Title}} - {{.Year}}" +
-   "{{end}}"
+type unit_measure struct {
+   factor float64
+   name string
+}
