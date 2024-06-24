@@ -11,6 +11,9 @@ type LogLevel struct {
 }
 
 func (LogLevel) RoundTrip(req *http.Request) (*http.Response, error) {
+   if req.Method == "" {
+      req.Method = "GET"
+   }
    slog.Info(req.Method, "URL", req.URL)
    return http.DefaultTransport.RoundTrip(req)
 }
