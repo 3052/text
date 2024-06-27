@@ -3,39 +3,27 @@ package text
 import (
    "log/slog"
    "net/http"
-   "os"
 )
 
-type LogLevel struct {
-   Level slog.Level
+type Transport struct {
+   Transport http.RoundTripper
 }
 
-func (LogLevel) RoundTrip(req *http.Request) (*http.Response, error) {
+func (t Transport) Default() {
+   http.DefaultTransport = t.Transport
+}
+
+func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
    if req.Method == "" {
       req.Method = "GET"
    }
    slog.Info(req.Method, "URL", req.URL)
-   return http.DefaultTransport.RoundTrip(req)
+   return t.Transport.RoundTrip(req)
 }
 
-func (v LogLevel) Set() {
-   text := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-      Level: v.Level,
-      ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-         switch a.Key {
-         case slog.LevelKey, slog.TimeKey:
-            return slog.Attr{}
-         }
-         return a
-      },
-   })
-   slog.SetDefault(slog.New(text))
-}
-
-func (LogLevel) SetTransport(value bool) {
-   if value {
-      http.DefaultClient.Transport = LogLevel{}
-   } else {
-      http.DefaultClient.Transport = nil
+func (t *Transport) Set() {
+   if t.Transport == nil {
+      t.Transport = http.DefaultTransport
    }
+   http.DefaultTransport = t
 }
