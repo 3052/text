@@ -11,12 +11,25 @@ import (
    "time"
 )
 
-var NameFormat = 
+var DefaultName = 
    "{{if .Show}}" +
       "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
    "{{else}}" +
       "{{.Title}} - {{.Year}}" +
    "{{end}}"
+
+func Name(n Namer) (string, error) {
+   text, err := new(template.Template).Parse(DefaultName)
+   if err != nil {
+      return "", err
+   }
+   var b strings.Builder
+   err = text.Execute(&b, n)
+   if err != nil {
+      return "", err
+   }
+   return b.String(), nil
+}
 
 func Clean(s string) string {
    mapping := func(r rune) rune {
@@ -33,19 +46,6 @@ func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
       return s[:i], s[i:], true
    }
    return s, nil, false
-}
-
-func Name(n Namer) (string, error) {
-   text, err := new(template.Template).Parse(NameFormat)
-   if err != nil {
-      return "", err
-   }
-   var b strings.Builder
-   err = text.Execute(&b, n)
-   if err != nil {
-      return "", err
-   }
-   return b.String(), nil
 }
 
 func label(value float64, unit unit_measure) string {
