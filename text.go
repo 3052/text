@@ -18,6 +18,16 @@ var DefaultName =
       "{{.Title}} - {{.Year}}" +
    "{{end}}"
 
+func Clean(s string) string {
+   mapping := func(r rune) rune {
+      if strings.ContainsRune(`"*/:<>?\|`, r) {
+         return '-'
+      }
+      return r
+   }
+   return strings.Map(mapping, s)
+}
+
 func Name(n Namer) (string, error) {
    text, err := new(template.Template).Parse(DefaultName)
    if err != nil {
@@ -29,16 +39,6 @@ func Name(n Namer) (string, error) {
       return "", err
    }
    return b.String(), nil
-}
-
-func Clean(s string) string {
-   mapping := func(r rune) rune {
-      if strings.ContainsRune(`"*/:<>?\|`, r) {
-         return '-'
-      }
-      return r
-   }
-   return strings.Map(mapping, s)
 }
 
 func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
