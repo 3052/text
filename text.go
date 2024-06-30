@@ -3,6 +3,7 @@ package text
 import (
    "bytes"
    "io"
+   "log"
    "log/slog"
    "net/http"
    "strconv"
@@ -11,7 +12,28 @@ import (
    "time"
 )
 
-var DefaultName = 
+func (Transport) Set(on bool) {
+   if on {
+      http.DefaultTransport = Transport{}
+   } else {
+      http.DefaultTransport = DefaultTransport
+   }
+   log.SetFlags(log.Ltime)
+}
+
+var DefaultTransport = http.DefaultTransport
+
+type Transport struct{}
+
+func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+   if req.Method == "" {
+      req.Method = "GET"
+   }
+   slog.Info(req.Method, "URL", req.URL)
+   return DefaultTransport.RoundTrip(req)
+}
+
+var DefaultName =
    "{{if .Show}}" +
       "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
    "{{else}}" +
@@ -48,6 +70,69 @@ func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
    return s, nil, false
 }
 
+type Cardinal float64
+
+type Namer interface {
+   Show() string
+   Season() int
+   Episode() int
+   Title() string
+   Year() int
+}
+
+type ProgressMeter struct {
+   first int
+   last int64
+   length int64
+   parts struct {
+      last int64
+      length int64
+   }
+   modified time.Time
+   date time.Time
+}
+
+func (p *ProgressMeter) Set(parts int) {
+   p.date = time.Now()
+   p.modified = time.Now()
+   p.parts.length = int64(parts)
+}
+
+func (p ProgressMeter) percent() Percent {
+   return Percent(p.first) / Percent(p.length)
+}
+
+func (p ProgressMeter) rate() Rate {
+   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
+}
+
+func (p ProgressMeter) size() Size {
+   return Size(p.first)
+}
+
+type Rate float64
+
+type Percent float64
+
+type Size float64
+
+func (p *ProgressMeter) Reader(res *http.Response) io.Reader {
+   p.parts.last += 1
+   p.last += res.ContentLength
+   p.length = p.last * p.parts.length / p.parts.last
+   return io.TeeReader(res.Body, p)
+}
+
+type unit_measure struct {
+   factor float64
+   name string
+}
+
+func (p Percent) String() string {
+   unit := unit_measure{100, " %"}
+   return label(float64(p), unit)
+}
+
 func label(value float64, unit unit_measure) string {
    var prec int
    if unit.factor != 1 {
@@ -67,57 +152,34 @@ func scale(value float64, units []unit_measure) string {
    return label(value, unit)
 }
 
-type Cardinal float64
-
 func (c Cardinal) String() string {
    units := []unit_measure{
       {1, ""},
       {1e-3, " thousand"},
       {1e-6, " million"},
       {1e-9, " billion"},
-      {1e-12, " trillion"},
    }
    return scale(float64(c), units)
 }
 
-type Namer interface {
-   Show() string
-   Season() int
-   Episode() int
-   Title() string
-   Year() int
-}
-
-type Percent float64
-
-func (p Percent) String() string {
-   unit := unit_measure{100, " %"}
-   return label(float64(p), unit)
-}
-
-type ProgressMeter struct {
-   first int
-   last int64
-   length int64
-   parts struct {
-      last int64
-      length int64
+func (s Size) String() string {
+   units := []unit_measure{
+      {1, " byte"},
+      {1e-3, " kilobyte"},
+      {1e-6, " megabyte"},
+      {1e-9, " gigabyte"},
    }
-   modified time.Time
-   date time.Time
+   return scale(float64(s), units)
 }
 
-func (p *ProgressMeter) Reader(res *http.Response) io.Reader {
-   p.parts.last += 1
-   p.last += res.ContentLength
-   p.length = p.last * p.parts.length / p.parts.last
-   return io.TeeReader(res.Body, p)
-}
-
-func (p *ProgressMeter) Set(parts int) {
-   p.date = time.Now()
-   p.modified = time.Now()
-   p.parts.length = int64(parts)
+func (r Rate) String() string {
+   units := []unit_measure{
+      {1, " byte/s"},
+      {1e-3, " kilobyte/s"},
+      {1e-6, " megabyte/s"},
+      {1e-9, " gigabyte/s"},
+   }
+   return scale(float64(r), units)
 }
 
 func (p *ProgressMeter) Write(data []byte) (int, error) {
@@ -127,47 +189,4 @@ func (p *ProgressMeter) Write(data []byte) (int, error) {
       p.modified = time.Now()
    }
    return len(data), nil
-}
-
-func (p ProgressMeter) percent() Percent {
-   return Percent(p.first) / Percent(p.length)
-}
-
-func (p ProgressMeter) rate() Rate {
-   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
-}
-
-func (p ProgressMeter) size() Size {
-   return Size(p.first)
-}
-
-type Rate float64
-
-func (r Rate) String() string {
-   units := []unit_measure{
-      {1, " byte/s"},
-      {1e-3, " kilobyte/s"},
-      {1e-6, " megabyte/s"},
-      {1e-9, " gigabyte/s"},
-      {1e-12, " terabyte/s"},
-   }
-   return scale(float64(r), units)
-}
-
-type Size float64
-
-func (s Size) String() string {
-   units := []unit_measure{
-      {1, " byte"},
-      {1e-3, " kilobyte"},
-      {1e-6, " megabyte"},
-      {1e-9, " gigabyte"},
-      {1e-12, " terabyte"},
-   }
-   return scale(float64(s), units)
-}
-
-type unit_measure struct {
-   factor float64
-   name string
 }
