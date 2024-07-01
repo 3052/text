@@ -21,6 +21,12 @@ func (Transport) Set(on bool) {
    log.SetFlags(log.Ltime)
 }
 
+func (p *ProgressMeter) Set(parts int) {
+   p.date = time.Now()
+   p.modified = time.Now()
+   p.parts.length = int64(parts)
+}
+
 var DefaultTransport = http.DefaultTransport
 
 type Transport struct{}
@@ -90,12 +96,6 @@ type ProgressMeter struct {
    }
    modified time.Time
    date time.Time
-}
-
-func (p *ProgressMeter) Set(parts int) {
-   p.date = time.Now()
-   p.modified = time.Now()
-   p.parts.length = int64(parts)
 }
 
 func (p ProgressMeter) percent() Percent {
