@@ -37,11 +37,11 @@ func (p ProgressMeter) size() Size {
    return Size(p.first)
 }
 
-func (p *ProgressMeter) Reader(res *http.Response) io.Reader {
+func (p *ProgressMeter) Reader(resp *http.Response) io.Reader {
    p.parts.last += 1
-   p.last += res.ContentLength
+   p.last += resp.ContentLength
    p.length = p.last * p.parts.length / p.parts.last
-   return io.TeeReader(res.Body, p)
+   return io.TeeReader(resp.Body, p)
 }
 
 func (p *ProgressMeter) Write(data []byte) (int, error) {
