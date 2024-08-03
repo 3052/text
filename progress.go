@@ -25,7 +25,7 @@ type ProgressMeter struct {
    date time.Time
 }
 
-func (p ProgressMeter) percent() Percent {
+func (p *ProgressMeter) percent() Percent {
    return Percent(p.first) / Percent(p.length)
 }
 
