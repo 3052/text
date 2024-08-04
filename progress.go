@@ -29,7 +29,7 @@ func (p *ProgressMeter) percent() Percent {
    return Percent(p.first) / Percent(p.length)
 }
 
-func (p ProgressMeter) rate() Rate {
+func (p *ProgressMeter) rate() Rate {
    return Rate(p.first) / Rate(time.Since(p.date).Seconds())
 }
 
