@@ -33,7 +33,7 @@ func (p *ProgressMeter) rate() Rate {
    return Rate(p.first) / Rate(time.Since(p.date).Seconds())
 }
 
-func (p ProgressMeter) size() Size {
+func (p *ProgressMeter) size() Size {
    return Size(p.first)
 }
 
