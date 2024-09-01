@@ -10,14 +10,22 @@ import (
    "text/template"
 )
 
-var DefaultTransport = http.DefaultTransport
-
 var DefaultName =
    "{{if .Show}}" +
-      "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
+      "{{if .Season}}" +
+         "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
+      "{{else}}" +
+         "{{.Show}} - {{.Title}}" +
+      "{{end}}" +
    "{{else}}" +
-      "{{.Title}} - {{.Year}}" +
+      "{{if .Year}}" +
+         "{{.Title}} - {{.Year}}" +
+      "{{else}}" +
+         "{{.Title}}" +
+      "{{end}}" +
    "{{end}}"
+
+var DefaultTransport = http.DefaultTransport
 
 func Clean(s string) string {
    mapping := func(r rune) rune {

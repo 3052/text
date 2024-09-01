@@ -14,7 +14,7 @@
   <body>
     <nav>
         154.pages.dev/text<span class="navbar-right">
-          v1.2.9 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
+          v1.3.0 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
       </nav>
     <main><h2 id="pkg-overview">package text</h2>
 <pre class="chroma"><span class="kn">import</span> <span class="s">&#34;154.pages.dev/text&#34;</span></pre>
@@ -41,7 +41,7 @@
   <li>
       <a href="#ProgressMeter">type ProgressMeter</a>
       <ul>
-          <li><a href="#ProgressMeter.Reader">func (p *ProgressMeter) Reader(res *http.Response) io.Reader</a></li>
+          <li><a href="#ProgressMeter.Reader">func (p *ProgressMeter) Reader(resp *http.Response) io.Reader</a></li>
           <li><a href="#ProgressMeter.Set">func (p *ProgressMeter) Set(parts int)</a></li>
           <li><a href="#ProgressMeter.Write">func (p *ProgressMeter) Write(data []byte) (int, error)</a></li>
           </ul>
@@ -67,9 +67,17 @@
       </li>
   </ul><h3 id="pkg-variables">Variables</h3>
   <pre class="chroma"><span class="kd">var</span> <span id="DefaultName"><span class="nx">DefaultName</span></span> <span class="p">=</span> <span class="s">&#34;{{if .Show}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{if .Season}}&#34;</span> <span class="o">+</span>
 	<span class="s">&#34;{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}&#34;</span> <span class="o">+</span>
 	<span class="s">&#34;{{else}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{.Show}} - {{.Title}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{end}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{else}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{if .Year}}&#34;</span> <span class="o">+</span>
 	<span class="s">&#34;{{.Title}} - {{.Year}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{else}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{.Title}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{end}}&#34;</span> <span class="o">+</span>
 	<span class="s">&#34;{{end}}&#34;</span></pre>
   <pre class="chroma"><span class="kd">var</span> <span id="DefaultTransport"><span class="nx">DefaultTransport</span></span> <span class="p">=</span> <a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#DefaultTransport"><span class="nx">DefaultTransport</span></a></pre>
   <h3 id="pkg-functions">Functions</h3>
@@ -101,7 +109,7 @@
 	<span class="c1">// contains filtered or unexported fields
 </span><span class="c1"></span><span class="p">}</span></pre>
     <h4 id="ProgressMeter.Reader">func (*ProgressMeter) Reader</h4>
-  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#ProgressMeter"><span class="nx">ProgressMeter</span></a><span class="p">)</span> <span class="nf">Reader</span><span class="p">(</span><span class="nx">res</span> <span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Response"><span class="nx">Response</span></a><span class="p">)</span> <a href="https://pkg.go.dev/io"><span class="nx">io</span></a><span class="p">.</span><a href="https://pkg.go.dev/io#Reader"><span class="nx">Reader</span></a></pre>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#ProgressMeter"><span class="nx">ProgressMeter</span></a><span class="p">)</span> <span class="nf">Reader</span><span class="p">(</span><span class="nx">resp</span> <span class="o">*</span><a href="https://pkg.go.dev/net/http"><span class="nx">http</span></a><span class="p">.</span><a href="https://pkg.go.dev/net/http#Response"><span class="nx">Response</span></a><span class="p">)</span> <a href="https://pkg.go.dev/io"><span class="nx">io</span></a><span class="p">.</span><a href="https://pkg.go.dev/io#Reader"><span class="nx">Reader</span></a></pre>
   <h4 id="ProgressMeter.Set">func (*ProgressMeter) Set</h4>
   <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><a href="#ProgressMeter"><span class="nx">ProgressMeter</span></a><span class="p">)</span> <span class="nf">Set</span><span class="p">(</span><span class="nx">parts</span> <a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a><span class="p">)</span></pre>
   <h4 id="ProgressMeter.Write">func (*ProgressMeter) Write</h4>
