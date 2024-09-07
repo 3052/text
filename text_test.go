@@ -4,9 +4,31 @@ import (
    "fmt"
    "io"
    "net/http"
+   "reflect"
    "testing"
    "text/template"
 )
+
+func TestSize(t *testing.T) {
+   size := reflect.TypeOf(&struct{}{}).Size()
+   for _, test := range size_tests {
+      if reflect.TypeOf(test).Size() > size {
+         fmt.Printf("*%T\n", test)
+      } else {
+         fmt.Printf("%T\n", test)
+      }
+   }
+}
+
+var size_tests = []any{
+   Cardinal(0),
+   Percent(0),
+   ProgressMeter{},
+   Rate(0),
+   Size(0),
+   Transport{},
+   unit_measure{},
+}
 
 func TestName(t *testing.T) {
    _, err := new(template.Template).Parse(DefaultName)
