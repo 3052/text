@@ -2,53 +2,61 @@ package text
 
 import (
    "bytes"
+   "io"
    "log"
    "log/slog"
    "net/http"
    "strconv"
-   "strings"
-   "text/template"
+   "time"
 )
 
-var DefaultName =
-   "{{if .Show}}" +
-      "{{if .Season}}" +
-         "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
-      "{{else}}" +
-         "{{.Show}} - {{.Title}}" +
-      "{{end}}" +
-   "{{else}}" +
-      "{{if .Year}}" +
-         "{{.Title}} - {{.Year}}" +
-      "{{else}}" +
-         "{{.Title}}" +
-      "{{end}}" +
-   "{{end}}"
+func (p *ProgressMeter) Set(parts int) {
+   p.date = time.Now()
+   p.modified = time.Now()
+   p.parts.length = int64(parts)
+}
+
+type ProgressMeter struct {
+   first int
+   last int64
+   length int64
+   parts struct {
+      last int64
+      length int64
+   }
+   modified time.Time
+   date time.Time
+}
+
+func (p *ProgressMeter) percent() Percent {
+   return Percent(p.first) / Percent(p.length)
+}
+
+func (p *ProgressMeter) rate() Rate {
+   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
+}
+
+func (p *ProgressMeter) size() Size {
+   return Size(p.first)
+}
+
+func (p *ProgressMeter) Reader(resp *http.Response) io.Reader {
+   p.parts.last += 1
+   p.last += resp.ContentLength
+   p.length = p.last * p.parts.length / p.parts.last
+   return io.TeeReader(resp.Body, p)
+}
+
+func (p *ProgressMeter) Write(data []byte) (int, error) {
+   p.first += len(data)
+   if time.Since(p.modified) >= time.Second {
+      slog.Info(p.percent().String(), "size", p.size(), "rate", p.rate())
+      p.modified = time.Now()
+   }
+   return len(data), nil
+}
 
 var DefaultTransport = http.DefaultTransport
-
-func Clean(s string) string {
-   mapping := func(r rune) rune {
-      if strings.ContainsRune(`"*/:<>?\|`, r) {
-         return '-'
-      }
-      return r
-   }
-   return strings.Map(mapping, s)
-}
-
-func Name(n Namer) (string, error) {
-   text, err := new(template.Template).Parse(DefaultName)
-   if err != nil {
-      return "", err
-   }
-   var b strings.Builder
-   err = text.Execute(&b, n)
-   if err != nil {
-      return "", err
-   }
-   return b.String(), nil
-}
 
 func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
    if i := bytes.Index(s, sep); i >= 0 {
@@ -86,14 +94,6 @@ func (c Cardinal) String() string {
       {1e-9, " billion"},
    }
    return scale(float64(c), units)
-}
-
-type Namer interface {
-   Show() string
-   Season() int
-   Episode() int
-   Title() string
-   Year() int
 }
 
 type Rate float64

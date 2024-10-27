@@ -4,37 +4,21 @@ import (
    "fmt"
    "io"
    "net/http"
-   "reflect"
    "testing"
-   "text/template"
 )
 
-func TestSize(t *testing.T) {
-   size := reflect.TypeOf(&struct{}{}).Size()
-   for _, test := range size_tests {
-      if reflect.TypeOf(test).Size() > size {
-         fmt.Printf("*%T\n", test)
-      } else {
-         fmt.Printf("%T\n", test)
-      }
-   }
-}
+const address = "https://dl.google.com/go/go1.21.5.windows-amd64.zip"
 
-var size_tests = []any{
-   Cardinal(0),
-   Percent(0),
-   ProgressMeter{},
-   Rate(0),
-   Size(0),
-   Transport{},
-   unit_measure{},
-}
-
-func TestName(t *testing.T) {
-   _, err := new(template.Template).Parse(DefaultName)
+func TestMeter(t *testing.T) {
+   var meter ProgressMeter
+   meter.Set(1)
+   Transport{}.Set(true)
+   resp, err := http.Get(address)
    if err != nil {
       t.Fatal(err)
    }
+   defer resp.Body.Close()
+   io.Copy(io.Discard, meter.Reader(resp))
 }
 
 func TestClient(t *testing.T) {

@@ -14,7 +14,7 @@
   <body>
     <nav>
         41.neocities.org/text<span class="navbar-right">
-          v1.3.1 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
+          v1.3.2 | <a href="">Root</a> | <a href="#pkg-index">Index</a></span>
       </nav>
     <main><h2 id="pkg-overview">package text</h2>
 <pre class="chroma"><span class="kn">import</span> <span class="s">&#34;41.neocities.org/text&#34;</span></pre>
@@ -68,7 +68,11 @@
   </ul><h3 id="pkg-variables">Variables</h3>
   <pre class="chroma"><span class="kd">var</span> <span id="DefaultName"><span class="nx">DefaultName</span></span> <span class="p">=</span> <span class="s">&#34;{{if .Show}}&#34;</span> <span class="o">+</span>
 	<span class="s">&#34;{{if .Season}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{if .Title}}&#34;</span> <span class="o">+</span>
 	<span class="s">&#34;{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{else}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{.Show}} - {{.Season}} {{.Episode}}&#34;</span> <span class="o">+</span>
+	<span class="s">&#34;{{end}}&#34;</span> <span class="o">+</span>
 	<span class="s">&#34;{{else}}&#34;</span> <span class="o">+</span>
 	<span class="s">&#34;{{.Show}} - {{.Title}}&#34;</span> <span class="o">+</span>
 	<span class="s">&#34;{{end}}&#34;</span> <span class="o">+</span>
