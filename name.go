@@ -5,6 +5,25 @@ import (
    "text/template"
 )
 
+var DefaultName =
+   "{{if .Show}}" +
+      "{{if .Season}}" +
+         "{{if .Title}}" +
+            "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
+         "{{else}}" +
+            "{{.Show}} - {{.Season}} {{.Episode}}" +
+         "{{end}}" +
+      "{{else}}" +
+         "{{.Show}} - {{.Title}}" +
+      "{{end}}" +
+   "{{else}}" +
+      "{{if .Year}}" +
+         "{{.Title}} - {{.Year}}" +
+      "{{else}}" +
+         "{{.Title}}" +
+      "{{end}}" +
+   "{{end}}"
+
 func Clean(s string) string {
    mapping := func(r rune) rune {
       if strings.ContainsRune(`"*/:<>?\|`, r) {
@@ -35,22 +54,3 @@ type Namer interface {
    Title() string
    Year() int
 }
-
-var DefaultName =
-   "{{if .Show}}" +
-      "{{if .Season}}" +
-         "{{if .Title}}" +
-            "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
-         "{{else}}" +
-            "{{.Show}} - {{.Season}} {{.Episode}}" +
-         "{{end}}" +
-      "{{else}}" +
-         "{{.Show}} - {{.Title}}" +
-      "{{end}}" +
-   "{{else}}" +
-      "{{if .Year}}" +
-         "{{.Title}} - {{.Year}}" +
-      "{{else}}" +
-         "{{.Title}}" +
-      "{{end}}" +
-   "{{end}}"
