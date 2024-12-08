@@ -5,15 +5,7 @@ import (
    "io"
    "net/http"
    "testing"
-   "text/template"
 )
-
-func TestName(t *testing.T) {
-   _, err := new(template.Template).Parse(DefaultName)
-   if err != nil {
-      t.Fatal(err)
-   }
-}
 
 const address = "https://dl.google.com/go/go1.21.5.windows-amd64.zip"
 

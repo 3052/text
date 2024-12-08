@@ -8,32 +8,8 @@ import (
    "net/http"
    "strconv"
    "strings"
-   "text/template"
    "time"
 )
-
-var DefaultName =
-   "{{if .Show}}" +
-      "{{if .Season}}" +
-         "{{if .Title}}" +
-            "{{.Show}} - {{.Season}} {{.Episode}} - {{.Title}}" +
-         "{{else}}" +
-            "{{.Show}} - {{.Season}} {{.Episode}}" +
-         "{{end}}" +
-      "{{else}}" +
-         "{{if .Episode}}" +
-            "{{.Show}} - {{.Episode}} - {{.Title}}" +
-         "{{else}}" +
-            "{{.Show}} - {{.Title}}" +
-         "{{end}}" +
-      "{{end}}" +
-   "{{else}}" +
-      "{{if .Year}}" +
-         "{{.Title}} - {{.Year}}" +
-      "{{else}}" +
-         "{{.Title}}" +
-      "{{end}}" +
-   "{{end}}"
 
 func Clean(s string) string {
    mapping := func(r rune) rune {
@@ -45,26 +21,6 @@ func Clean(s string) string {
    return strings.Map(mapping, s)
 }
 
-func Name(n Namer) (string, error) {
-   text, err := new(template.Template).Parse(DefaultName)
-   if err != nil {
-      return "", err
-   }
-   var b strings.Builder
-   err = text.Execute(&b, n)
-   if err != nil {
-      return "", err
-   }
-   return b.String(), nil
-}
-
-type Namer interface {
-   Show() string
-   Season() int
-   Episode() int
-   Title() string
-   Year() int
-}
 func (p *ProgressMeter) Set(parts int) {
    p.date = time.Now()
    p.modified = time.Now()
