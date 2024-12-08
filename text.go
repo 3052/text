@@ -21,7 +21,11 @@ var DefaultName =
             "{{.Show}} - {{.Season}} {{.Episode}}" +
          "{{end}}" +
       "{{else}}" +
-         "{{.Show}} - {{.Title}}" +
+         "{{if .Episode}}" +
+            "{{.Show}} - {{.Episode}} - {{.Title}}" +
+         "{{else}}" +
+            "{{.Show}} - {{.Title}}" +
+         "{{end}}" +
       "{{end}}" +
    "{{else}}" +
       "{{if .Year}}" +
