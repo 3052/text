@@ -5,6 +5,28 @@ import (
    "testing"
 )
 
+var name_tests = []test_alfa{
+   {
+      title: "title",
+      year: 2024,
+   },
+   {
+      show: "show",
+      title: "title",
+   },
+   {
+      show: "show",
+      episode: 3,
+      title: "title",
+   },
+   {
+      show: "show",
+      season: 2,
+      episode: 3,
+      title: "title",
+   },
+}
+
 func (t test_bravo) Show() string {
    return t.t.show
 }
@@ -35,28 +57,6 @@ type test_alfa struct {
    episode int
    title string
    year int
-}
-
-var name_tests = []test_alfa{
-   {
-      title: "title",
-      year: 2024,
-   },
-   {
-      show: "show",
-      title: "title",
-   },
-   {
-      show: "show",
-      episode: 3,
-      title: "title",
-   },
-   {
-      show: "show",
-      season: 2,
-      episode: 3,
-      title: "title",
-   },
 }
 
 func TestName(t *testing.T) {
