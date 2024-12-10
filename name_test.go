@@ -9,11 +9,11 @@ func (t test_bravo) Show() string {
    return t.t.show
 }
 
-func (t test_bravo) Season() int64 {
+func (t test_bravo) Season() int {
    return t.t.season
 }
 
-func (t test_bravo) Episode() int64 {
+func (t test_bravo) Episode() int {
    return t.t.episode
 }
 
@@ -21,7 +21,7 @@ func (t test_bravo) Title() string {
    return t.t.title
 }
 
-func (t test_bravo) Year() int64 {
+func (t test_bravo) Year() int {
    return t.t.year
 }
 
@@ -31,10 +31,10 @@ type test_bravo struct {
 
 type test_alfa struct {
    show string
-   season int64
-   episode int64
+   season int
+   episode int
    title string
-   year int64
+   year int
 }
 
 var name_tests = []test_alfa{

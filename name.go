@@ -1,25 +1,27 @@
 package text
 
-import "strconv"
+import "fmt"
+
+type Namer interface {
+   Show() string
+   Season() int
+   Episode() int
+   Title() string
+   Year() int
+}
 
 func Name(n Namer) string {
    var data []byte
    if n.Show() != "" {
-      data = append(data, n.Show()...)
-      data = append(data, " - "...)
+      data = fmt.Append(data, n.Show(), " - ")
       if n.Season() >= 1 {
-         data = strconv.AppendInt(data, n.Season(), 10)
-         data = append(data, ' ')
-         data = strconv.AppendInt(data, n.Episode(), 10)
+         data = fmt.Append(data, n.Season(), " ", n.Episode())
          if n.Title() != "" {
-            data = append(data, " - "...)
-            data = append(data, n.Title()...)
+            data = fmt.Append(data, " - ", n.Title())
          }
       } else {
          if n.Episode() >= 1 {
-            data = strconv.AppendInt(data, n.Episode(), 10)
-            data = append(data, " - "...)
-            data = append(data, n.Title()...)
+            data = fmt.Append(data, n.Episode(), " - ", n.Title())
          } else {
             data = append(data, n.Title()...)
          }
@@ -27,17 +29,8 @@ func Name(n Namer) string {
    } else {
       data = append(data, n.Title()...)
       if n.Year() >= 1 {
-         data = append(data, " - "...)
-         data = strconv.AppendInt(data, n.Year(), 10)
+         data = fmt.Append(data, " - ", n.Year())
       }
    }
    return string(data)
-}
-
-type Namer interface {
-   Show() string
-   Season() int64
-   Episode() int64
-   Title() string
-   Year() int64
 }
