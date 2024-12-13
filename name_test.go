@@ -27,6 +27,14 @@ var name_tests = []test_alfa{
    },
 }
 
+type test_alfa struct {
+   show string
+   season int
+   episode int
+   title string
+   year int
+}
+
 func (t test_bravo) Show() string {
    return t.t.show
 }
@@ -49,14 +57,6 @@ func (t test_bravo) Year() int {
 
 type test_bravo struct {
    t test_alfa
-}
-
-type test_alfa struct {
-   show string
-   season int
-   episode int
-   title string
-   year int
 }
 
 func TestName(t *testing.T) {
