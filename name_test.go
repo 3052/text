@@ -35,33 +35,33 @@ type test_alfa struct {
    year int
 }
 
+type test_bravo func() test_alfa
+
 func (t test_bravo) Show() string {
-   return t.t.show
+   return t().show
 }
 
 func (t test_bravo) Season() int {
-   return t.t.season
+   return t().season
 }
 
 func (t test_bravo) Episode() int {
-   return t.t.episode
+   return t().episode
 }
 
 func (t test_bravo) Title() string {
-   return t.t.title
+   return t().title
 }
 
 func (t test_bravo) Year() int {
-   return t.t.year
-}
-
-type test_bravo struct {
-   t test_alfa
+   return t().year
 }
 
 func TestName(t *testing.T) {
    for _, test := range name_tests {
-      bravo := test_bravo{test}
+      var bravo test_bravo = func() test_alfa {
+         return test
+      }
       fmt.Printf("%q\n", Name(bravo))
    }
 }
