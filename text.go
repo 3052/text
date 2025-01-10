@@ -44,6 +44,7 @@ func Name(n Namer) string {
    }
    return string(data)
 }
+
 func Clean(s string) string {
    mapping := func(r rune) rune {
       if strings.ContainsRune(`"*/:<>?\|`, r) {
@@ -99,8 +100,6 @@ func (p *ProgressMeter) Write(data []byte) (int, error) {
    }
    return len(data), nil
 }
-
-var DefaultTransport = http.DefaultTransport
 
 func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
    if i := bytes.Index(s, sep); i >= 0 {
@@ -171,26 +170,22 @@ func (s Size) String() string {
    return scale(float64(s), units)
 }
 
-func (Transport) Set(on bool) {
-   if on {
-      http.DefaultTransport = Transport{}
-   } else {
-      http.DefaultTransport = DefaultTransport
-   }
-   log.SetFlags(log.Ltime)
+type unit_measure struct {
+   factor float64
+   name string
 }
-
-type Transport struct{}
 
 func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
    if req.Method == "" {
       req.Method = "GET"
    }
    slog.Info(req.Method, "URL", req.URL)
-   return DefaultTransport.RoundTrip(req)
+   return http.DefaultTransport.RoundTrip(req)
 }
 
-type unit_measure struct {
-   factor float64
-   name string
+type Transport struct{}
+
+func (Transport) Set() {
+   http.DefaultClient.Transport = Transport{}
+   log.SetFlags(log.Ltime)
 }
