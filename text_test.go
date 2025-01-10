@@ -7,10 +7,6 @@ import (
    "testing"
 )
 
-func TestPercent(t *testing.T) {
-   fmt.Println(Percent(1234) / 10000)
-}
-
 func TestTransport(t *testing.T) {
    req, err := http.NewRequest("", "http://go.dev", nil)
    if err != nil {
