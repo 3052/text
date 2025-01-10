@@ -1,7 +1,6 @@
 package text
 
 import (
-   "bytes"
    "fmt"
    "io"
    "log"
@@ -12,12 +11,14 @@ import (
    "time"
 )
 
-type Namer interface {
-   Show() string
-   Season() int
-   Episode() int
-   Title() string
-   Year() int
+func Clean(s string) string {
+   mapping := func(r rune) rune {
+      if strings.ContainsRune(`"*/:<>?\|`, r) {
+         return '-'
+      }
+      return r
+   }
+   return strings.Map(mapping, s)
 }
 
 func Name(n Namer) string {
@@ -45,14 +46,12 @@ func Name(n Namer) string {
    return string(data)
 }
 
-func Clean(s string) string {
-   mapping := func(r rune) rune {
-      if strings.ContainsRune(`"*/:<>?\|`, r) {
-         return '-'
-      }
-      return r
-   }
-   return strings.Map(mapping, s)
+type Namer interface {
+   Show() string
+   Season() int
+   Episode() int
+   Title() string
+   Year() int
 }
 
 func (p *ProgressMeter) Set(parts int) {
@@ -99,13 +98,6 @@ func (p *ProgressMeter) Write(data []byte) (int, error) {
       p.modified = time.Now()
    }
    return len(data), nil
-}
-
-func CutBefore(s, sep []byte) ([]byte, []byte, bool) {
-   if i := bytes.Index(s, sep); i >= 0 {
-      return s[:i], s[i:], true
-   }
-   return s, nil, false
 }
 
 func label(value float64, unit unit_measure) string {
