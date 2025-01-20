@@ -1,7 +1,6 @@
 package text
 
 import (
-   "fmt"
    "io"
    "log"
    "log/slog"
@@ -11,47 +10,15 @@ import (
    "time"
 )
 
+// curl -O youtube.com/watch?v=KbqzJYml520
 func Clean(s string) string {
    mapping := func(r rune) rune {
       if strings.ContainsRune(`"*/:<>?\|`, r) {
-         return '-'
+         return '_'
       }
       return r
    }
    return strings.Map(mapping, s)
-}
-
-func Name(n Namer) string {
-   var data []byte
-   if n.Show() != "" {
-      data = fmt.Append(data, n.Show(), " - ")
-      if n.Season() >= 1 {
-         data = fmt.Append(data, n.Season(), " ", n.Episode())
-         if n.Title() != "" {
-            data = fmt.Append(data, " - ", n.Title())
-         }
-      } else {
-         if n.Episode() >= 1 {
-            data = fmt.Append(data, n.Episode(), " - ", n.Title())
-         } else {
-            data = append(data, n.Title()...)
-         }
-      }
-   } else {
-      data = append(data, n.Title()...)
-      if n.Year() >= 1 {
-         data = fmt.Append(data, " - ", n.Year())
-      }
-   }
-   return string(data)
-}
-
-type Namer interface {
-   Show() string
-   Season() int
-   Episode() int
-   Title() string
-   Year() int
 }
 
 func (p *ProgressMeter) Set(parts int) {
@@ -89,15 +56,6 @@ func (p *ProgressMeter) Reader(resp *http.Response) io.Reader {
    p.last += resp.ContentLength
    p.length = p.last * p.parts.length / p.parts.last
    return io.TeeReader(resp.Body, p)
-}
-
-func (p *ProgressMeter) Write(data []byte) (int, error) {
-   p.first += len(data)
-   if time.Since(p.modified) >= time.Second {
-      slog.Info(p.percent().String(), "size", p.size(), "rate", p.rate())
-      p.modified = time.Now()
-   }
-   return len(data), nil
 }
 
 func label(value float64, unit unit_measure) string {
@@ -167,17 +125,26 @@ type unit_measure struct {
    name string
 }
 
+type Transport struct{}
+
+func (Transport) Set() {
+   http.DefaultClient.Transport = Transport{}
+   log.SetFlags(log.Ltime)
+}
+
+func (p *ProgressMeter) Write(data []byte) (int, error) {
+   p.first += len(data)
+   if time.Since(p.modified) >= time.Second {
+      slog.Info(p.percent().String(), "size", p.size(), "rate", p.rate())
+      p.modified = time.Now()
+   }
+   return len(data), nil
+}
+
 func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
    if req.Method == "" {
       req.Method = "GET"
    }
    slog.Info(req.Method, "URL", req.URL)
    return http.DefaultTransport.RoundTrip(req)
-}
-
-type Transport struct{}
-
-func (Transport) Set() {
-   http.DefaultClient.Transport = Transport{}
-   log.SetFlags(log.Ltime)
 }
