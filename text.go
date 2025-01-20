@@ -21,43 +21,6 @@ func Clean(s string) string {
    return strings.Map(mapping, s)
 }
 
-func (p *ProgressMeter) Set(parts int) {
-   p.date = time.Now()
-   p.modified = time.Now()
-   p.parts.length = int64(parts)
-}
-
-type ProgressMeter struct {
-   first int
-   last int64
-   length int64
-   parts struct {
-      last int64
-      length int64
-   }
-   modified time.Time
-   date time.Time
-}
-
-func (p *ProgressMeter) percent() Percent {
-   return Percent(p.first) / Percent(p.length)
-}
-
-func (p *ProgressMeter) rate() Rate {
-   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
-}
-
-func (p *ProgressMeter) size() Size {
-   return Size(p.first)
-}
-
-func (p *ProgressMeter) Reader(resp *http.Response) io.Reader {
-   p.parts.last += 1
-   p.last += resp.ContentLength
-   p.length = p.last * p.parts.length / p.parts.last
-   return io.TeeReader(resp.Body, p)
-}
-
 func label(value float64, unit unit_measure) string {
    var prec int
    if unit.factor != 1 {
@@ -132,6 +95,38 @@ func (Transport) Set() {
    log.SetFlags(log.Ltime)
 }
 
+func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+   if req.Method == "" {
+      req.Method = "GET"
+   }
+   slog.Info(req.Method, "URL", req.URL)
+   return http.DefaultTransport.RoundTrip(req)
+}
+
+type ProgressMeter struct {
+   first int
+   last int64
+   length int64
+   parts struct {
+      last int64
+      length int64
+   }
+   modified time.Time
+   date time.Time
+}
+
+func (p *ProgressMeter) percent() Percent {
+   return Percent(p.first) / Percent(p.length)
+}
+
+func (p *ProgressMeter) rate() Rate {
+   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
+}
+
+func (p *ProgressMeter) size() Size {
+   return Size(p.first)
+}
+
 func (p *ProgressMeter) Write(data []byte) (int, error) {
    p.first += len(data)
    if time.Since(p.modified) >= time.Second {
@@ -141,10 +136,15 @@ func (p *ProgressMeter) Write(data []byte) (int, error) {
    return len(data), nil
 }
 
-func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
-   if req.Method == "" {
-      req.Method = "GET"
-   }
-   slog.Info(req.Method, "URL", req.URL)
-   return http.DefaultTransport.RoundTrip(req)
+func (p *ProgressMeter) Set(parts int) {
+   p.date = time.Now()
+   p.modified = time.Now()
+   p.parts.length = int64(parts)
+}
+
+func (p *ProgressMeter) Reader(resp *http.Response) io.Reader {
+   p.parts.last += 1
+   p.last += resp.ContentLength
+   p.length = p.last * p.parts.length / p.parts.last
+   return io.TeeReader(resp.Body, p)
 }
