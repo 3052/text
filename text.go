@@ -6,20 +6,8 @@ import (
    "log/slog"
    "net/http"
    "strconv"
-   "strings"
    "time"
 )
-
-// curl -O youtube.com/watch?v=KbqzJYml520
-func Clean(s string) string {
-   mapping := func(r rune) rune {
-      if strings.ContainsRune(`"*/:<>?\|`, r) {
-         return '_'
-      }
-      return r
-   }
-   return strings.Map(mapping, s)
-}
 
 func label(value float64, unit unit_measure) string {
    var prec int

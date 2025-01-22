@@ -76,13 +76,6 @@ func TestCardinal(t *testing.T) {
    }
 }
 
-func TestClean(t *testing.T) {
-   out := Clean(`hello "*/:<>?\| world`)
-   if out != "hello _________ world" {
-      t.Fatal(out)
-   }
-}
-
 func TestPercent(t *testing.T) {
    for _, test := range percent_tests {
       if fmt.Sprint(test.in) != test.out {
