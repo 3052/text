@@ -1,35 +1,17 @@
 package log
 
 import (
-   "io"
    "log"
-   "net/http"
    "strconv"
-   "time"
 )
 
-func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
-   if req.Method == "" {
-      req.Method = "GET"
-   }
-   log.Println(req.Method, req.URL)
-   return http.DefaultTransport.RoundTrip(req)
-}
-
-func (p *ProgressMeter) Write(data []byte) (int, error) {
-   p.first += len(data)
-   if time.Since(p.modified) >= time.Second {
-      log.Printf("| %v | %v | %v", p.percent(), p.size(), p.rate())
-      p.modified = time.Now()
-   }
-   return len(data), nil
-}
-
-type Transport struct{}
-
-func (Transport) Set() {
-   http.DefaultClient.Transport = Transport{}
+func init() {
    log.SetFlags(log.Ltime)
+}
+
+func (p Percent) String() string {
+   unit := unit_measure{100, " %"}
+   return label(float64(p), unit)
 }
 
 func label(value float64, unit unit_measure) string {
@@ -39,16 +21,6 @@ func label(value float64, unit unit_measure) string {
       value *= unit.factor
    }
    return strconv.FormatFloat(value, 'f', prec, 64) + unit.name
-}
-
-func scale(value float64, units []unit_measure) string {
-   var unit unit_measure
-   for _, unit = range units {
-      if unit.factor * value < 1000 {
-         break
-      }
-   }
-   return label(value, unit)
 }
 
 type Cardinal float64
@@ -77,11 +49,6 @@ func (r Rate) String() string {
 
 type Percent float64
 
-func (p Percent) String() string {
-   unit := unit_measure{100, " %"}
-   return label(float64(p), unit)
-}
-
 type Size float64
 
 func (s Size) String() string {
@@ -99,39 +66,12 @@ type unit_measure struct {
    name string
 }
 
-type ProgressMeter struct {
-   first int
-   last int64
-   length int64
-   parts struct {
-      last int64
-      length int64
+func scale(value float64, units []unit_measure) string {
+   var unit unit_measure
+   for _, unit = range units {
+      if unit.factor * value < 1000 {
+         break
+      }
    }
-   modified time.Time
-   date time.Time
-}
-
-func (p *ProgressMeter) percent() Percent {
-   return Percent(p.first) / Percent(p.length)
-}
-
-func (p *ProgressMeter) rate() Rate {
-   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
-}
-
-func (p *ProgressMeter) size() Size {
-   return Size(p.first)
-}
-
-func (p *ProgressMeter) Set(parts int) {
-   p.date = time.Now()
-   p.modified = time.Now()
-   p.parts.length = int64(parts)
-}
-
-func (p *ProgressMeter) Reader(resp *http.Response) io.Reader {
-   p.parts.last += 1
-   p.last += resp.ContentLength
-   p.length = p.last * p.parts.length / p.parts.last
-   return io.TeeReader(resp.Body, p)
+   return label(value, unit)
 }

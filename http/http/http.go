@@ -1,16 +1,15 @@
-package http
+package main
 
 import (
    "io"
    "net/http"
-   "testing"
+   _ "41.neocities.org/log/http"
 )
 
-func TestHttp(t *testing.T) {
-   http.DefaultClient.Transport = transport{}
+func main() {
    resp, err := http.Get("http://httpbingo.org/get")
    if err != nil {
-      t.Fatal(err)
+      panic(err)
    }
    resp.Write(io.Discard)
 }
