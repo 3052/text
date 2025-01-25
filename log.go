@@ -9,6 +9,21 @@ import (
    "time"
 )
 
+type Transport struct{}
+
+func (Transport) Set() {
+   http.DefaultClient.Transport = Transport{}
+   log.SetFlags(log.Ltime)
+}
+
+func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+   if req.Method == "" {
+      req.Method = "GET"
+   }
+   slog.Info(req.Method, "URL", req.URL)
+   return http.DefaultTransport.RoundTrip(req)
+}
+
 func label(value float64, unit unit_measure) string {
    var prec int
    if unit.factor != 1 {
@@ -74,21 +89,6 @@ func (s Size) String() string {
 type unit_measure struct {
    factor float64
    name string
-}
-
-type Transport struct{}
-
-func (Transport) Set() {
-   http.DefaultClient.Transport = Transport{}
-   log.SetFlags(log.Ltime)
-}
-
-func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
-   if req.Method == "" {
-      req.Method = "GET"
-   }
-   slog.Info(req.Method, "URL", req.URL)
-   return http.DefaultTransport.RoundTrip(req)
 }
 
 type ProgressMeter struct {
