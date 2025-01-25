@@ -1,12 +1,11 @@
 package http
 
 import (
+   "41.neocities.org/log"
    "io"
-   "log"
    "net/http"
-   "strconv"
    "time"
-   _ "41.neocities.org/log"
+   stdLog "log"
 )
 
 func init() {
@@ -16,7 +15,7 @@ func init() {
 func (p *ProgressMeter) Write(data []byte) (int, error) {
    p.first += len(data)
    if time.Since(p.modified) >= time.Second {
-      log.Printf("%v, %v, %v", p.percent(), p.size(), p.rate())
+      stdLog.Printf("%v, %v, %v", p.percent(), p.size(), p.rate())
       p.modified = time.Now()
    }
    return len(data), nil
@@ -26,75 +25,8 @@ func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
    if req.Method == "" {
       req.Method = "GET"
    }
-   log.Println(req.Method, req.URL)
+   stdLog.Println(req.Method, req.URL)
    return http.DefaultTransport.RoundTrip(req)
-}
-
-func (p Percent) String() string {
-   unit := unit_measure{100, " %"}
-   return label(float64(p), unit)
-}
-
-func label(value float64, unit unit_measure) string {
-   var prec int
-   if unit.factor != 1 {
-      prec = 2
-      value *= unit.factor
-   }
-   return strconv.FormatFloat(value, 'f', prec, 64) + unit.name
-}
-
-func scale(value float64, units []unit_measure) string {
-   var unit unit_measure
-   for _, unit = range units {
-      if unit.factor * value < 1000 {
-         break
-      }
-   }
-   return label(value, unit)
-}
-
-type Cardinal float64
-
-func (c Cardinal) String() string {
-   units := []unit_measure{
-      {1, ""},
-      {1e-3, " thousand"},
-      {1e-6, " million"},
-      {1e-9, " billion"},
-   }
-   return scale(float64(c), units)
-}
-
-type Rate float64
-
-func (r Rate) String() string {
-   units := []unit_measure{
-      {1, " byte/s"},
-      {1e-3, " kilobyte/s"},
-      {1e-6, " megabyte/s"},
-      {1e-9, " gigabyte/s"},
-   }
-   return scale(float64(r), units)
-}
-
-type Percent float64
-
-type Size float64
-
-func (s Size) String() string {
-   units := []unit_measure{
-      {1, " byte"},
-      {1e-3, " kilobyte"},
-      {1e-6, " megabyte"},
-      {1e-9, " gigabyte"},
-   }
-   return scale(float64(s), units)
-}
-
-type unit_measure struct {
-   factor float64
-   name string
 }
 
 type ProgressMeter struct {
@@ -109,16 +41,16 @@ type ProgressMeter struct {
    date time.Time
 }
 
-func (p *ProgressMeter) percent() Percent {
-   return Percent(p.first) / Percent(p.length)
+func (p *ProgressMeter) percent() log.Percent {
+   return log.Percent(p.first) / log.Percent(p.length)
 }
 
-func (p *ProgressMeter) rate() Rate {
-   return Rate(p.first) / Rate(time.Since(p.date).Seconds())
+func (p *ProgressMeter) rate() log.Rate {
+   return log.Rate(p.first) / log.Rate(time.Since(p.date).Seconds())
 }
 
-func (p *ProgressMeter) size() Size {
-   return Size(p.first)
+func (p *ProgressMeter) size() log.Size {
+   return log.Size(p.first)
 }
 
 func (p *ProgressMeter) Set(parts int) {
@@ -135,8 +67,3 @@ func (p *ProgressMeter) Reader(resp *http.Response) io.Reader {
 }
 
 type Transport struct{}
-
-func (Transport) Set() {
-   http.DefaultClient.Transport = Transport{}
-   log.SetFlags(log.Ltime)
-}
