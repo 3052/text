@@ -3,25 +3,33 @@ package log
 import (
    "io"
    "log"
-   "log/slog"
    "net/http"
    "strconv"
    "time"
 )
+
+func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+   if req.Method == "" {
+      req.Method = "GET"
+   }
+   log.Println(req.Method, req.URL)
+   return http.DefaultTransport.RoundTrip(req)
+}
+
+func (p *ProgressMeter) Write(data []byte) (int, error) {
+   p.first += len(data)
+   if time.Since(p.modified) >= time.Second {
+      log.Printf("| %v | %v | %v", p.percent(), p.size(), p.rate())
+      p.modified = time.Now()
+   }
+   return len(data), nil
+}
 
 type Transport struct{}
 
 func (Transport) Set() {
    http.DefaultClient.Transport = Transport{}
    log.SetFlags(log.Ltime)
-}
-
-func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
-   if req.Method == "" {
-      req.Method = "GET"
-   }
-   slog.Info(req.Method, "URL", req.URL)
-   return http.DefaultTransport.RoundTrip(req)
 }
 
 func label(value float64, unit unit_measure) string {
@@ -113,15 +121,6 @@ func (p *ProgressMeter) rate() Rate {
 
 func (p *ProgressMeter) size() Size {
    return Size(p.first)
-}
-
-func (p *ProgressMeter) Write(data []byte) (int, error) {
-   p.first += len(data)
-   if time.Since(p.modified) >= time.Second {
-      slog.Info(p.percent().String(), "size", p.size(), "rate", p.rate())
-      p.modified = time.Now()
-   }
-   return len(data), nil
 }
 
 func (p *ProgressMeter) Set(parts int) {
