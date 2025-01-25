@@ -1,6 +1,6 @@
 package main
 
-import "41.neocities.org/log/os"
+import "41.neocities.org/x/os"
 
 func main() {
    err := os.WriteFile("hello.txt", []byte("hello"))

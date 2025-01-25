@@ -8,20 +8,6 @@ import (
    "time"
 )
 
-func init() {
-   http.DefaultClient.Transport = Transport{}
-}
-
-type Transport struct{}
-
-func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
-   if req.Method == "" {
-      req.Method = "GET"
-   }
-   log.Println(req.Method, req.URL)
-   return http.DefaultTransport.RoundTrip(req)
-}
-
 func (p *ProgressMeter) Write(data []byte) (int, error) {
    p.first += len(data)
    now := time.Now()

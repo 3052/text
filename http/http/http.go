@@ -3,7 +3,7 @@ package main
 import (
    "io"
    "net/http"
-   _ "41.neocities.org/log/http"
+   _ "41.neocities.org/x/http"
 )
 
 func main() {
