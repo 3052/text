@@ -56,11 +56,8 @@ func (p *ProgressBytes) durationB() time.Duration {
    return p.durationA() * time.Duration(p.byteB) / time.Duration(p.byteA)
 }
 
-type ProgressParts struct {
-   partA int64
-   partB int64
-   timeA time.Time
-   timeB int64
+func (p *ProgressParts) durationA() time.Duration {
+   return time.Since(p.timeA)
 }
 
 func (p *ProgressParts) Next() bool {
@@ -74,14 +71,17 @@ func (p *ProgressParts) Next() bool {
    return p.partB >= 1
 }
 
-func (p *ProgressParts) Set(partB int64) {
+func (p *ProgressParts) Set(partB int) {
    p.partB = partB
    p.timeA = time.Now()
    p.timeB = time.Now().Unix()
 }
 
-func (p *ProgressParts) durationA() time.Duration {
-   return time.Since(p.timeA)
+type ProgressParts struct {
+   partA int64
+   partB int
+   timeA time.Time
+   timeB int64
 }
 
 // keep last two terms separate
