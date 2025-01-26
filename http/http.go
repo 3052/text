@@ -1,58 +1,86 @@
 package http
 
 import (
-   "41.neocities.org/x/strconv"
    "io"
    "log"
    "net/http"
    "time"
 )
 
-func init() {
-   http.DefaultClient.Transport = Transport{}
+type ProgressBytes struct {
+   byteA int64
+   byteB int64
+   read io.Reader
+   timeA time.Time
+   timeB int64
 }
 
-type Transport struct{}
+func (p *ProgressBytes) Read(data []byte) (int, error) {
+   n, err := p.read.Read(data)
+   p.byteA += int64(n)
+   p.byteB -= int64(n)
+   timeB := time.Now().Unix()
+   if timeB > p.timeB {
+      log.Print(p.durationB())
+      p.timeB = timeB
+   }
+   return n, err
+}
 
-func (Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (p *ProgressBytes) Reset(resp *http.Response) {
+   p.byteB = resp.ContentLength
+   p.read = resp.Body
+   p.timeA = time.Now()
+   p.timeB = time.Now().Unix()
+}
+
+func (p *ProgressBytes) durationA() time.Duration {
+   return time.Since(p.timeA)
+}
+
+func (p *ProgressBytes) durationB() time.Duration {
+   return p.durationA() * time.Duration(p.byteB) / time.Duration(p.byteA)
+}
+
+type ProgressParts struct {
+   partA int64
+   partB int64
+   timeA time.Time
+   timeB int64
+}
+
+func (p *ProgressParts) Next() bool {
+   p.partA++
+   p.partB--
+   timeB := time.Now().Unix()
+   if timeB > p.timeB {
+      log.Print(p.durationB())
+      p.timeB = timeB
+   }
+   return p.partB >= 1
+}
+
+func (p *ProgressParts) Reset(partB int64) {
+   p.partB = partB
+   p.timeA = time.Now()
+   p.timeB = time.Now().Unix()
+}
+
+func (p *ProgressParts) durationA() time.Duration {
+   return time.Since(p.timeA)
+}
+
+// keep last two terms separate
+func (p *ProgressParts) durationB() time.Duration {
+   return p.durationA() * time.Duration(p.partB) / time.Duration(p.partA)
+}
+
+type Transport http.Transport
+
+func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
    if req.Method == "" {
       req.Method = "GET"
    }
    log.Println(req.Method, req.URL)
-   return http.DefaultTransport.RoundTrip(req)
-}
-
-func (p *ProgressMeter) Write(data []byte) (int, error) {
-   p.first += len(data)
-   now := time.Now()
-   if now.Sub(p.modified) >= time.Second {
-      log.Print(strconv.Percent(p.first) / strconv.Percent(p.length))
-      p.modified = now
-   }
-   return len(data), nil
-}
-
-func (p *ProgressMeter) Set(parts int) {
-   p.date = time.Now()
-   p.modified = time.Now()
-   p.parts.length = int64(parts)
-}
-
-type ProgressMeter struct {
-   first int
-   last int64
-   length int64
-   parts struct {
-      last int64
-      length int64
-   }
-   modified time.Time
-   date time.Time
-}
-
-func (p *ProgressMeter) Reader(resp *http.Response) io.Reader {
-   p.parts.last += 1
-   p.last += resp.ContentLength
-   p.length = p.last * p.parts.length / p.parts.last
-   return io.TeeReader(resp.Body, p)
+   return (*http.Transport)(t).RoundTrip(req)
 }

@@ -2,42 +2,50 @@ package http
 
 import (
    "io"
-   "log"
    "net/http"
    "net/url"
-   "strings"
    "testing"
 )
 
-func TestProgressMeter(t *testing.T) {
-   resp, err := http.Get("https://dl.google.com/go/go1.23.5.windows-amd64.zip")
-   if err != nil {
+func TestBytes(t *testing.T) {
+   http.DefaultClient.Transport = &Transport{
+      DisableCompression: true,
+      Proxy: http.ProxyFromEnvironment,
+   }
+   req := http.Request{URL: &url.URL{
+      Scheme: "http",
+      Host: "httpbingo.org",
+      Path: "/drip",
+      RawQuery: "delay=0&duration=9",
+   }}
+   resp, err := http.DefaultClient.Do(&req)
+   if err != nil {   
       t.Fatal(err)
    }
    defer resp.Body.Close()
-   var meter ProgressMeter
-   meter.Set(1)
-   _, err = io.ReadAll(meter.Reader(resp))
-   if err != nil {
+   var progress ProgressBytes
+   progress.Reset(resp)
+   _, err = io.ReadAll(&progress)
+   if err != nil {   
       t.Fatal(err)
    }
 }
 
-func TestTransport(t *testing.T) {
-   var out strings.Builder
-   log.SetOutput(&out)
-   req := http.Request{
-      URL: &url.URL{Scheme:"http", Host: "example.com"},
-   }
-   resp, err := http.DefaultClient.Do(&req)
-   if err != nil {
-      t.Fatal(err)
-   }
-   err = resp.Write(io.Discard)
-   if err != nil {
-      t.Fatal(err)
-   }
-   if !strings.HasSuffix(out.String(), " INFO GET URL=http://example.com\n") {
-      t.Fatal(&out)
+func TestParts(t *testing.T) {
+   http.DefaultClient.Transport = nil
+   var progress ProgressParts
+   progress.Reset(9)
+   for {
+      resp, err := http.Get("http://httpbingo.org/drip?delay=0&duration=1")
+      if err != nil {   
+         t.Fatal(err)
+      }
+      err = resp.Write(io.Discard)
+      if err != nil {   
+         t.Fatal(err)
+      }
+      if !progress.Next() {
+         break
+      }
    }
 }
