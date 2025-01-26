@@ -33,9 +33,10 @@ func TestBytes(t *testing.T) {
 
 func TestParts(t *testing.T) {
    http.DefaultClient.Transport = nil
+   var parts [9]struct{}
    var progress ProgressParts
-   progress.Set(9)
-   for {
+   progress.Set(len(parts))
+   for range parts {
       resp, err := http.Get("http://httpbingo.org/drip?delay=0&duration=1")
       if err != nil {   
          t.Fatal(err)
@@ -44,8 +45,6 @@ func TestParts(t *testing.T) {
       if err != nil {   
          t.Fatal(err)
       }
-      if !progress.Next() {
-         break
-      }
+      progress.Next()
    }
 }
