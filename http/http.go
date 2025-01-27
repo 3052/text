@@ -10,7 +10,7 @@ import (
 // firefox does this
 // 29s left - 19.9 of 33.5 MB (540 KB/sec)
 func log_progress(d time.Duration) {
-   log.Print(d.Truncate(time.Second))
+   log.Println(d.Truncate(time.Second), "left")
 }
 
 func (p *ProgressBytes) durationB() time.Duration {
