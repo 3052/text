@@ -17,20 +17,6 @@ func (p *ProgressBytes) durationB() time.Duration {
    return p.durationA() * time.Duration(p.byteB) / time.Duration(p.byteA)
 }
 
-func (t Transport) Set() {
-   http.DefaultClient.Transport = &t
-}
-
-func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
-   if req.Method == "" {
-      req.Method = "GET"
-   }
-   log.Println(req.Method, req.URL)
-   return (*http.Transport)(t).RoundTrip(req)
-}
-
-type Transport http.Transport
-
 type ProgressBytes struct {
    byteA int64
    byteB int64
