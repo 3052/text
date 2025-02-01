@@ -24,7 +24,7 @@ func TestBytes(t *testing.T) {
    defer resp.Body.Close()
    var progress ProgressBytes
    progress.Set(resp)
-   _, err = io.ReadAll(&progress)
+   _, err = io.Copy(io.Discard, &progress)
    if err != nil {   
       t.Fatal(err)
    }
